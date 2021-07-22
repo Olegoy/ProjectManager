@@ -20,6 +20,10 @@ public class ProjectResponseDto {
     public ProjectResponseDto() {
     }
 
+    public ProjectResponseDto(Long id) {
+        this.id = id;
+    }
+
     public ProjectResponseDto(String name, String customer) {
         this.name = name;
         this.customer = customer;

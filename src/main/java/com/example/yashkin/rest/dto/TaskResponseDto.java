@@ -2,11 +2,16 @@ package com.example.yashkin.rest.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
+import java.time.LocalDateTime;
+
 @Schema(description = "Задача")
 public class TaskResponseDto {
 
     @Schema(description = "ID проекта")
     private Long projectId;
+
+    @Schema(description = "ID задачи")
+    private Long id;
 
     @Schema(description = "Название задачи")
     private String name;
@@ -30,17 +35,29 @@ public class TaskResponseDto {
     private Integer version;
 
     @Schema(description = "Дата начала задачи")
-    private String dateStart;
+    private LocalDateTime dateStart;
 
     @Schema(description = "Дата завершения задачи")
-    private String dateEnd;
+    private LocalDateTime dateEnd;
 
     public TaskResponseDto() {
+    }
+
+    public TaskResponseDto(Long id) {
+        this.id = id;
     }
 
     public TaskResponseDto(String name, String author) {
         this.name = name;
         this.author = author;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public Long getProjectId() {
@@ -107,19 +124,19 @@ public class TaskResponseDto {
         this.version = version;
     }
 
-    public String getDateStart() {
+    public LocalDateTime getDateStart() {
         return dateStart;
     }
 
-    public void setDateStart(String dateStart) {
+    public void setDateStart(LocalDateTime dateStart) {
         this.dateStart = dateStart;
     }
 
-    public String getDateEnd() {
+    public LocalDateTime getDateEnd() {
         return dateEnd;
     }
 
-    public void setDateEnd(String dateEnd) {
+    public void setDateEnd(LocalDateTime dateEnd) {
         this.dateEnd = dateEnd;
     }
 }

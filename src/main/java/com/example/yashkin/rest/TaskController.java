@@ -3,6 +3,7 @@ package com.example.yashkin.rest;
 import com.example.yashkin.rest.dto.TaskRequestDto;
 import com.example.yashkin.rest.dto.TaskResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -10,6 +11,9 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.util.List;
 
+@Tag(name = "Задача", description = "CRUD задач")
+@RestController
+@RequestMapping("/api/rest/tasks")
 public class TaskController {
 
     @Operation(summary = "Получить список задач")
@@ -20,6 +24,13 @@ public class TaskController {
 
         List<TaskResponseDto> results =  List.of(task, task2);
         return ResponseEntity.ok().body(results);
+    }
+
+    @Operation(summary = "Получить задачу по id")
+    @GetMapping(value = "/{id}")
+    public ResponseEntity<TaskResponseDto> getTaskById(@PathVariable Long id) {
+        TaskResponseDto task = new TaskResponseDto(1L);
+        return new ResponseEntity<>(task, HttpStatus.OK);
     }
 
     @Operation(summary = "Добавить задачу")
