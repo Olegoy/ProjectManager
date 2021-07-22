@@ -5,6 +5,7 @@ import com.example.yashkin.rest.dto.TaskResponseDto;
 import com.example.yashkin.rest.dto.UserRequestDto;
 import com.example.yashkin.rest.dto.UserResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,6 +13,9 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.util.List;
 
+@Tag(name = "Пользователи", description = "CRUD Пользователей")
+@RestController
+@RequestMapping("/api/rest/users")
 public class UserController {
 
     @Operation(summary = "Получить список пользователей")
@@ -22,6 +26,13 @@ public class UserController {
 
         List<UserResponseDto> results =  List.of(user, user2);
         return ResponseEntity.ok().body(results);
+    }
+
+        @Operation(summary = "Получить пользователя по id")
+    @GetMapping(value = "/{id}")
+    public ResponseEntity<UserResponseDto> getUserById(@PathVariable Long id) {
+        UserResponseDto user = new UserResponseDto(1L);
+        return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
     @Operation(summary = "Добавить пользователя")

@@ -20,6 +20,10 @@ public class UserResponseDto {
     public UserResponseDto() {
     }
 
+    public UserResponseDto(Long id) {
+        this.id = id;
+    }
+
     public UserResponseDto(String firstName, String secondName) {
         this.firstName = firstName;
         this.secondName = secondName;

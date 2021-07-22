@@ -2,23 +2,46 @@ package com.example.yashkin.rest.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
+import java.time.LocalDateTime;
+
 @Schema(description = "Релиз")
 public class ReleaseResponseDto {
+
+    @Schema(description = "ID релиза")
+    private Long id;
 
     @Schema(description = "Версия")
     private Integer version;
 
     @Schema(description = "Дата начала")
-    private String dateStart;
+    private LocalDateTime dateStart;
 
     @Schema(description = "Дата завершения")
-    private String dateEnd;
+    private LocalDateTime dateEnd;
 
     public ReleaseResponseDto() {
     }
 
+    public ReleaseResponseDto(Long id) {
+        this.id = id;
+    }
+
     public ReleaseResponseDto(Integer version) {
         this.version = version;
+    }
+
+    public ReleaseResponseDto(Integer version, LocalDateTime dateStart, LocalDateTime dateEnd) {
+        this.version = version;
+        this.dateStart = dateStart;
+        this.dateEnd = dateEnd;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public Integer getVersion() {
@@ -29,19 +52,19 @@ public class ReleaseResponseDto {
         this.version = version;
     }
 
-    public String getDateStart() {
+    public LocalDateTime getDateStart() {
         return dateStart;
     }
 
-    public void setDateStart(String dateStart) {
+    public void setDateStart(LocalDateTime dateStart) {
         this.dateStart = dateStart;
     }
 
-    public String getDateEnd() {
+    public LocalDateTime getDateEnd() {
         return dateEnd;
     }
 
-    public void setDateEnd(String dateEnd) {
+    public void setDateEnd(LocalDateTime dateEnd) {
         this.dateEnd = dateEnd;
     }
 }
