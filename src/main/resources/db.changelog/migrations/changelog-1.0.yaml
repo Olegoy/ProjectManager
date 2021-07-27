@@ -1,0 +1,56 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 000001-create-table-project
+      author: Oleg Yashkin
+      changes:
+        - createTable:
+            tableName: project
+            columns:
+              - column: { name: id, type: uuid, autoIncrement: true, constraints: { primaryKey: true } }
+              - column: { name: name, type: VARCHAR(255), constraints: { nullable: false } }
+              - column: { name: status, type: VARCHAR(255), constraints: { nullable: false } }
+              - column: { name: customer_id, type: uuid, constraints: { nullable: false, foreignKeyName: fk_project_user, references: users(id) } }
+
+  - changeSet:
+      id: 000002-create-table-task
+      author: Oleg Yashkin
+      changes:
+        - createTable:
+            tableName: task
+            columns:
+              - column: { name: id, type: uuid, autoIncrement: true, constraints: { primaryKey: true } }
+              - column: { name: name, type: VARCHAR(255), constraints: { nullable: false } }
+              - column: { name: author_id, type: uuid, constraints: { nullable: false, foreignKeyName: fk_task_author, references: users(id) } }
+              - column: { name: executor_id, type: uuid, constraints: { foreignKeyName: fk_task_executor, references: users(id), nullable: true } }
+              - column: { name: type, type: VARCHAR(255), constraints: { nullable: false } }
+              - column: { name: status, type: VARCHAR(255), constraints: { nullable: false } }
+              - column: { name: priority, type: INTEGER, constraints: { nullable: false }  }
+              - column: { name: release_id, type: uuid, constraints: { nullable: false, foreignKeyName: fk_task_release, references: release(id) } }
+              - column: { name: date_start, type: TIMESTAMP, constrains: {nullable: false} }
+              - column: { name: date_end, type: TIMESTAMP, constrains: {nullable: false} }
+              - column: { name: project_id, type: uuid, constraints: { nullable: false, foreignKeyName: fk_task_project, references: project(id) } }
+
+  - changeSet:
+      id: 000003-create-table-users
+      author: Oleg Yashkin
+      changes:
+        - createTable:
+            tableName: users
+            columns:
+              - column: { name: id, type: uuid, autoIncrement: true, constrains: { primaryKey: true } }
+              - column: { name: first_name, type: VARCHAR(255), constraints: { nullable: false } }
+              - column: { name: last_name, type: VARCHAR(255), constraints: { nullable: false } }
+              - column: { name: role, type: VARCHAR(255), constraints: { nullable: false } }
+
+  - changeSet:
+      id: 000004-create-table-release
+      author: Oleg Yashkin
+      changes:
+        - createTable:
+            tableName: release
+            columns:
+              - column: { name: id, type: uuid, autoIncrement: true, constrains: { primaryKey: true } }
+              - column: { name: version, type: INTEGER, constrains: { nullable: false, unique: false } }
+              - column: { name: date_start, type: TIMESTAMP, constrains: {nullable: false} }
+              - column: { name: date_end, type: TIMESTAMP, constrains: {nullable: false} }

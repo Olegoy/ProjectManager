@@ -9,11 +9,11 @@ public class UserRequestDto {
     private String firstName;
 
     @Schema(description = "Фамилия пользователя")
-    private String secondName;
+    private String lastName;
 
-    public UserRequestDto(String firstName, String secondName) {
+    public UserRequestDto(String firstName, String lastName) {
         this.firstName = firstName;
-        this.secondName = secondName;
+        this.lastName = lastName;
     }
 
     public String getFirstName() {
@@ -24,12 +24,12 @@ public class UserRequestDto {
         this.firstName = firstName;
     }
 
-    public String getSecondName() {
-        return secondName;
+    public String getLastName() {
+        return lastName;
     }
 
-    public void setSecondName(String secondName) {
-        this.secondName = secondName;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
 }

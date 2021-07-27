@@ -1,37 +1,41 @@
-package com.example.yashkin.rest.dto;
+package com.example.yashkin.entity;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-@Schema(description = "Релиз")
-public class ReleaseResponseDto {
+@Entity
+@Table(name = "release")
+public class ReleaseEntity {
 
-    @Schema(description = "ID релиза")
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
-    @Schema(description = "Версия")
+    @Column(name = "version")
     private Integer version;
 
-    @Schema(description = "Дата начала")
+    @Column(name = "date_start")
     private LocalDateTime dateStart;
 
-    @Schema(description = "Дата завершения")
+    @Column(name = "date_end")
     private LocalDateTime dateEnd;
 
-    public ReleaseResponseDto() {
+    @ManyToOne
+    @JoinColumn(name = "release_id")
+    private TaskEntity task;
+
+    public ReleaseEntity() {
     }
 
-    public ReleaseResponseDto(UUID id) {
-        this.id = id;
-    }
-
-    public ReleaseResponseDto(Integer version) {
-        this.version = version;
-    }
-
-    public ReleaseResponseDto(Integer version, LocalDateTime dateStart, LocalDateTime dateEnd) {
+    public ReleaseEntity(Integer version, LocalDateTime dateStart, LocalDateTime dateEnd) {
         this.version = version;
         this.dateStart = dateStart;
         this.dateEnd = dateEnd;

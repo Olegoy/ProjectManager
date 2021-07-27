@@ -2,17 +2,19 @@ package com.example.yashkin.rest.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
+import java.util.UUID;
+
 @Schema(description = "Пользователь")
 public class UserResponseDto {
 
     @Schema(description = "ID пользователя")
-    private Long id;
+    private UUID id;
 
     @Schema(description = "Имя пользователя")
     private String firstName;
 
     @Schema(description = "Фамилия пользователя")
-    private String secondName;
+    private String lastName;
 
     @Schema(description = "Роль пользователя")
     private String role;
@@ -20,29 +22,21 @@ public class UserResponseDto {
     public UserResponseDto() {
     }
 
-    public UserResponseDto(Long id) {
+    public UserResponseDto(UUID id) {
         this.id = id;
     }
 
-    public UserResponseDto(String firstName, String secondName) {
+    public UserResponseDto(String firstName, String lastName) {
         this.firstName = firstName;
-        this.secondName = secondName;
+        this.lastName = lastName;
     }
 
-    public Long getId() {
+    public UUID getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(UUID id) {
         id = id;
-    }
-
-    public Long getiD() {
-        return id;
-    }
-
-    public void setiD(Long iD) {
-        this.id = iD;
     }
 
     public String getFirstName() {
@@ -53,12 +47,12 @@ public class UserResponseDto {
         this.firstName = firstName;
     }
 
-    public String getSecondName() {
-        return secondName;
+    public String getLastName() {
+        return lastName;
     }
 
-    public void setSecondName(String secondName) {
-        this.secondName = secondName;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
     public String getRole() {

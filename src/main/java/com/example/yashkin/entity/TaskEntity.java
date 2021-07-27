@@ -1,55 +1,61 @@
-package com.example.yashkin.rest.dto;
+package com.example.yashkin.entity;
 
 import com.example.yashkin.model.TaskStatus;
-import io.swagger.v3.oas.annotations.media.Schema;
 
+import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
-@Schema(description = "Задача")
-public class TaskResponseDto {
+@Entity
+@Table(name = "task")
+public class TaskEntity {
 
-    @Schema(description = "ID проекта")
-    private UUID projectId;
-
-    @Schema(description = "ID задачи")
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
-    @Schema(description = "Название задачи")
+    @Column(name = "name")
     private String name;
 
-    @Schema(description = "Автор задачи")
+    @Column(name = "author")
     private String author;
 
-    @Schema(description = "Исполнитель задачи")
+    @Column(name = "executor")
     private String executor;
 
-    @Schema(description = "Тип задачи")
+    @Column(name = "type")
     private String type;
 
-    @Schema(description = "Статус задачи")
+    @Column(name = "status")
     private TaskStatus status;
 
-    @Schema(description = "Приоритет задачи")
-    private Long priority;
+    @Column(name = "priority")
+    private Integer priority;
 
-    @Schema(description = "Версия")
+    @Column(name = "version")
     private Integer version;
 
-    @Schema(description = "Дата начала задачи")
+    @Column(name = "date_start")
     private LocalDateTime dateStart;
 
-    @Schema(description = "Дата завершения задачи")
+    @Column(name = "date_end")
     private LocalDateTime dateEnd;
 
-    public TaskResponseDto() {
+    @ManyToOne
+    @JoinColumn(name = "project_id")
+    private ProjectEntity project;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "task")
+    private List<ReleaseEntity> releases;
+
+    @ManyToMany(mappedBy = "tasks")
+    private List<UserEntity> users;
+
+    public TaskEntity() {
     }
 
-    public TaskResponseDto(UUID id) {
-        this.id = id;
-    }
-
-    public TaskResponseDto(String name, String author) {
+    public TaskEntity(String name, String author) {
         this.name = name;
         this.author = author;
     }
@@ -60,14 +66,6 @@ public class TaskResponseDto {
 
     public void setId(UUID id) {
         this.id = id;
-    }
-
-    public UUID getProjectId() {
-        return projectId;
-    }
-
-    public void setProjectId(UUID projectId) {
-        this.projectId = projectId;
     }
 
     public String getName() {
@@ -110,11 +108,11 @@ public class TaskResponseDto {
         this.status = status;
     }
 
-    public Long getPriority() {
+    public Integer getPriority() {
         return priority;
     }
 
-    public void setPriority(Long priority) {
+    public void setPriority(Integer priority) {
         this.priority = priority;
     }
 
