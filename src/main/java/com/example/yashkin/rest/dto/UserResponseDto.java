@@ -2,13 +2,11 @@ package com.example.yashkin.rest.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-import java.util.UUID;
-
 @Schema(description = "Пользователь")
 public class UserResponseDto {
 
     @Schema(description = "ID пользователя")
-    private UUID id;
+    private Long id;
 
     @Schema(description = "Имя пользователя")
     private String firstName;
@@ -22,7 +20,7 @@ public class UserResponseDto {
     public UserResponseDto() {
     }
 
-    public UserResponseDto(UUID id) {
+    public UserResponseDto(Long id) {
         this.id = id;
     }
 
@@ -31,11 +29,11 @@ public class UserResponseDto {
         this.lastName = lastName;
     }
 
-    public UUID getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(UUID id) {
+    public void setId(Long id) {
         id = id;
     }
 

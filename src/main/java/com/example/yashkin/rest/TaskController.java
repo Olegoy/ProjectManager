@@ -5,7 +5,6 @@ import com.example.yashkin.rest.dto.TaskResponseDto;
 import com.example.yashkin.service.TaskService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -21,18 +20,20 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Tag(name = "Задача", description = "CRUD задач")
 @RestController
-@RequestMapping("/api/rest/tasks")
+@RequestMapping("${project.uri}")
 public class TaskController {
 
-    @Autowired
     private TaskService taskService;
 
+    public TaskController(TaskService taskService) {
+        this.taskService = taskService;
+    }
+
     @Operation(summary = "Получить список задач")
-    @GetMapping(value = "/tasks")
+    @GetMapping("/tasks")
     public ResponseEntity<List<TaskResponseDto>> getTasks() {
         TaskResponseDto task = new TaskResponseDto("task1", "author1");
         TaskResponseDto task2 = new TaskResponseDto("task2", "author2");
@@ -44,14 +45,14 @@ public class TaskController {
     }
 
     @Operation(summary = "Получить задачу по id")
-    @GetMapping(value = "/tasks/get")
-    public ResponseEntity<TaskResponseDto> getTaskById(@PathVariable UUID id) {
+    @GetMapping("/tasks/{id}")
+    public ResponseEntity<TaskResponseDto> getTaskById(@PathVariable Long id) {
         TaskResponseDto responseDto = taskService.getById(id);
         return ResponseEntity.ok().body(responseDto);
     }
 
     @Operation(summary = "Добавить задачу")
-    @PostMapping(value = "/tasks/add")
+    @PostMapping("/tasks")
     public ResponseEntity<TaskResponseDto> addTask(@RequestBody TaskRequestDto requestDto) {
         // добавление в БД
         TaskResponseDto responseDto = taskService.addTask(requestDto);
@@ -60,17 +61,17 @@ public class TaskController {
     }
 
     @Operation(summary = "Обновление задачи")
-    @PutMapping(value = "/tasks/update")
-    public ResponseEntity<TaskResponseDto> updateTask(@PathVariable UUID id,
+    @PutMapping("/tasks/{id}")
+    public ResponseEntity<TaskResponseDto> updateTask(@PathVariable Long id,
                                                              @RequestBody TaskRequestDto requestDto) throws IOException {
         // обновление сущности в БД
-        TaskResponseDto responseDto = taskService.updateTask(requestDto);
+        TaskResponseDto responseDto = taskService.updateTask(id, requestDto);
         return ResponseEntity.ok().body(responseDto);
     }
 
     @Operation(summary = "Удаление задачи")
-    @DeleteMapping(value = "/tasks/delete")
-    public ResponseEntity deleteTask(@PathVariable UUID id) {
+    @DeleteMapping("/tasks/{id}")
+    public ResponseEntity deleteTask(@PathVariable Long id) {
         // удаление сущности из БД
         TaskResponseDto responseDto = taskService.deleteTask(id);
 

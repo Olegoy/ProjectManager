@@ -4,16 +4,15 @@ import com.example.yashkin.model.TaskStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Schema(description = "Задача")
 public class TaskResponseDto {
 
     @Schema(description = "ID проекта")
-    private UUID projectId;
+    private Long projectId;
 
     @Schema(description = "ID задачи")
-    private UUID id;
+    private Long id;
 
     @Schema(description = "Название задачи")
     private String name;
@@ -45,7 +44,7 @@ public class TaskResponseDto {
     public TaskResponseDto() {
     }
 
-    public TaskResponseDto(UUID id) {
+    public TaskResponseDto(Long id) {
         this.id = id;
     }
 
@@ -54,19 +53,19 @@ public class TaskResponseDto {
         this.author = author;
     }
 
-    public UUID getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(UUID id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
-    public UUID getProjectId() {
+    public Long getProjectId() {
         return projectId;
     }
 
-    public void setProjectId(UUID projectId) {
+    public void setProjectId(Long projectId) {
         this.projectId = projectId;
     }
 

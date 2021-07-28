@@ -12,8 +12,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import java.util.List;
-import java.util.UUID;
+import java.util.Set;
 
 @Entity
 @Table(name = "project")
@@ -21,7 +20,7 @@ public class ProjectEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID id;
+    private Long id;
 
     @Column(name = "name")
     private String projectName;
@@ -33,11 +32,11 @@ public class ProjectEntity {
     private String customer;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "project")
-    private List<TaskEntity> tasks;
+    private Set<TaskEntity> tasks;
 
     @ManyToOne
     @JoinColumn(name = "customer_id")
-    private UserEntity user_customer;
+    private UserEntity userCustomer;
 
     public ProjectEntity() {
     }
@@ -46,11 +45,20 @@ public class ProjectEntity {
         this.projectName = projectName;
     }
 
-    public UUID getId() {
+    public ProjectEntity(Long id, String projectName, ProjectStatus status, String customer, Set<TaskEntity> tasks, UserEntity userCustomer) {
+        this.id = id;
+        this.projectName = projectName;
+        this.status = status;
+        this.customer = customer;
+        this.tasks = tasks;
+        this.userCustomer = userCustomer;
+    }
+
+    public Long getId() {
         return id;
     }
 
-    public void setId(UUID id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

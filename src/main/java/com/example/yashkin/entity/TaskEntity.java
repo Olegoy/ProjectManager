@@ -2,10 +2,19 @@ package com.example.yashkin.entity;
 
 import com.example.yashkin.model.TaskStatus;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.UUID;
+import java.util.Set;
 
 @Entity
 @Table(name = "task")
@@ -13,7 +22,7 @@ public class TaskEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID id;
+    private Long id;
 
     @Column(name = "name")
     private String name;
@@ -47,10 +56,10 @@ public class TaskEntity {
     private ProjectEntity project;
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "task")
-    private List<ReleaseEntity> releases;
+    private Set<ReleaseEntity> releases;
 
     @ManyToMany(mappedBy = "tasks")
-    private List<UserEntity> users;
+    private Set<UserEntity> users;
 
     public TaskEntity() {
     }
@@ -60,11 +69,27 @@ public class TaskEntity {
         this.author = author;
     }
 
-    public UUID getId() {
+    public TaskEntity(Long id, String name, String author, String executor, String type, TaskStatus status, Integer priority, Integer version, LocalDateTime dateStart, LocalDateTime dateEnd, ProjectEntity project, Set<ReleaseEntity> releases, Set<UserEntity> users) {
+        this.id = id;
+        this.name = name;
+        this.author = author;
+        this.executor = executor;
+        this.type = type;
+        this.status = status;
+        this.priority = priority;
+        this.version = version;
+        this.dateStart = dateStart;
+        this.dateEnd = dateEnd;
+        this.project = project;
+        this.releases = releases;
+        this.users = users;
+    }
+
+    public Long getId() {
         return id;
     }
 
-    public void setId(UUID id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

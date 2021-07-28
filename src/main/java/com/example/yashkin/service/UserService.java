@@ -7,12 +7,12 @@ import java.util.UUID;
 
 public interface UserService {
 
-    UserResponseDto getById(UUID id);
+    UserResponseDto getById(Long id);
 
     UserResponseDto addUser(UserRequestDto userRequestDto);
 
-    UserResponseDto updateUser(UUID id, UserRequestDto userRequestDto);
+    UserResponseDto updateUser(Long id, UserRequestDto userRequestDto);
 
-    UserResponseDto deleteUser(UUID id);
+    UserResponseDto deleteUser(Long id);
 
 }

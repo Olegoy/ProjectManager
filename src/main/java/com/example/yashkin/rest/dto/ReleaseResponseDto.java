@@ -3,13 +3,12 @@ package com.example.yashkin.rest.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Schema(description = "Релиз")
 public class ReleaseResponseDto {
 
     @Schema(description = "ID релиза")
-    private UUID id;
+    private Long id;
 
     @Schema(description = "Версия")
     private Integer version;
@@ -23,7 +22,7 @@ public class ReleaseResponseDto {
     public ReleaseResponseDto() {
     }
 
-    public ReleaseResponseDto(UUID id) {
+    public ReleaseResponseDto(Long id) {
         this.id = id;
     }
 
@@ -37,11 +36,11 @@ public class ReleaseResponseDto {
         this.dateEnd = dateEnd;
     }
 
-    public UUID getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(UUID id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

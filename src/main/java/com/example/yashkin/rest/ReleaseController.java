@@ -5,7 +5,6 @@ import com.example.yashkin.rest.dto.ReleaseResponseDto;
 import com.example.yashkin.service.ReleaseService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -21,19 +20,20 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 @Tag(name = "Релиз", description = "CRUD Релиза")
 @RestController
-@RequestMapping("/api/rest/releases")
+@RequestMapping("${project.uri}")
 public class ReleaseController {
 
-    @Autowired
     private ReleaseService releaseService;
 
+    public ReleaseController(ReleaseService releaseService) {
+        this.releaseService = releaseService;
+    }
 
     @Operation(summary = "Получить список релизов")
-    @GetMapping(value = "/releases/")
+    @GetMapping("/releases")
     public ResponseEntity<List<ReleaseResponseDto>> getReleases() {
         ReleaseResponseDto release = new ReleaseResponseDto(1);
         ReleaseResponseDto release2 = new ReleaseResponseDto(2);
@@ -45,14 +45,14 @@ public class ReleaseController {
     }
 
     @Operation(summary = "Получить релиз по id")
-    @GetMapping(value = "/{id}")
-    public ResponseEntity<ReleaseResponseDto> getReleaseById(@PathVariable UUID id) {
+    @GetMapping("/releases/{id}")
+    public ResponseEntity<ReleaseResponseDto> getReleaseById(@PathVariable Long id) {
         ReleaseResponseDto responseDto = releaseService.getById(id);
         return ResponseEntity.ok().body(responseDto);
     }
 
     @Operation(summary = "Добавить релиз")
-    @PostMapping(value = "/releases/add")
+    @PostMapping("/releases/")
     public ResponseEntity<ReleaseResponseDto> addRelease(@RequestBody ReleaseRequestDto requestDto) {
         // добавление в БД
         ReleaseResponseDto responseDto = releaseService.addRelease(requestDto);
@@ -61,18 +61,18 @@ public class ReleaseController {
     }
 
     @Operation(summary = "Обновление релиза")
-    @PutMapping(value = "/releases/update")
-    public ResponseEntity<ReleaseResponseDto> updateRelease(@PathVariable Integer version,
+    @PutMapping("/releases/{id}")
+    public ResponseEntity<ReleaseResponseDto> updateRelease(@PathVariable Long id,
                                                              @RequestBody ReleaseRequestDto requestDto) throws IOException {
         // обновление сущности в БД
-        ReleaseResponseDto responseDto = releaseService.updateRelease(version, requestDto);
+        ReleaseResponseDto responseDto = releaseService.updateRelease(id, requestDto);
 
         return ResponseEntity.ok().body(responseDto);
     }
 
     @Operation(summary = "Удаление релиза")
-    @DeleteMapping(value = "/releases/delete")
-    public ResponseEntity deleteRelease(@PathVariable UUID id) {
+    @DeleteMapping("/releases/{id}")
+    public ResponseEntity deleteRelease(@PathVariable Long id) {
         // удаление сущности из БД
         ReleaseResponseDto responseDto = releaseService.deleteRelease(id);
 

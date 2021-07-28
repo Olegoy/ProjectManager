@@ -6,11 +6,11 @@ import com.example.yashkin.rest.dto.TaskResponseDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.factory.Mappers;
+import org.springframework.stereotype.Component;
 
-@Mapper
+@Mapper(componentModel = "spring")
+@Component
 public interface TaskMapper {
-
-    TaskMapper INSTANCE = Mappers.getMapper(TaskMapper.class);
 
     TaskEntity taskEntityFromTaskRequestDto(TaskRequestDto taskRequestDto);
 

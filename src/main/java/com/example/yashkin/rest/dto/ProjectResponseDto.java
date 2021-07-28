@@ -3,8 +3,6 @@ package com.example.yashkin.rest.dto;
 import com.example.yashkin.model.ProjectStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-import java.util.UUID;
-
 @Schema(description = "Проект")
 public class ProjectResponseDto {
 
@@ -15,7 +13,7 @@ public class ProjectResponseDto {
     private String customer;
 
     @Schema(description = "ID проекта")
-    private UUID id;
+    private Long id;
 
     @Schema(description = "Статус проекта")
     private ProjectStatus status;
@@ -23,7 +21,7 @@ public class ProjectResponseDto {
     public ProjectResponseDto() {
     }
 
-    public ProjectResponseDto(UUID id) {
+    public ProjectResponseDto(Long id) {
         this.id = id;
     }
 
@@ -48,11 +46,11 @@ public class ProjectResponseDto {
         this.customer = customer;
     }
 
-    public UUID getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(UUID id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

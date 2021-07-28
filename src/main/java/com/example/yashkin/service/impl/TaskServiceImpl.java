@@ -7,26 +7,29 @@ import com.example.yashkin.repository.TaskRepository;
 import com.example.yashkin.rest.dto.TaskRequestDto;
 import com.example.yashkin.rest.dto.TaskResponseDto;
 import com.example.yashkin.service.TaskService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.UUID;
 
 @Service
 public class TaskServiceImpl implements TaskService {
 
-    @Autowired
     private TaskRepository taskRepository;
+
+    private TaskMapper INSTANCE;
+
+    public TaskServiceImpl(TaskRepository taskRepository, TaskMapper INSTANCE) {
+        this.taskRepository = taskRepository;
+        this.INSTANCE = INSTANCE;
+    }
 
     @Transactional
     @Override
-    public TaskResponseDto getById(UUID id) throws NullPointerException {
+    public TaskResponseDto getById(Long id) throws NullPointerException {
         TaskEntity taskEntity = taskRepository.findById(id).orElseThrow(
-                () -> new NotFoundException("Task with ID = ' ' not found")
+                () -> new NotFoundException(String.format("Task with ID = %d not found", id))
         );
 
-        TaskResponseDto responseDto = TaskMapper.INSTANCE.taskResponseDtoFromTaskEntity(taskEntity);
+        TaskResponseDto responseDto = INSTANCE.taskResponseDtoFromTaskEntity(taskEntity);
 
         return responseDto;
 
@@ -36,35 +39,42 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public TaskResponseDto addTask(TaskRequestDto taskRequestDto) {
 
-        TaskEntity entity = new TaskEntity("Task1", "Author");
+        TaskEntity entity = INSTANCE.taskEntityFromTaskRequestDto(taskRequestDto);
         taskRepository.save(entity);
 
-        TaskResponseDto responseDto = TaskMapper.INSTANCE.taskResponseDtoFromTaskEntity(entity);
+        TaskResponseDto responseDto = INSTANCE.taskResponseDtoFromTaskEntity(entity);
         return responseDto;
 
     }
 
     @Transactional
     @Override
-    public TaskResponseDto updateTask(TaskRequestDto taskRequestDto) throws NullPointerException {
-        TaskEntity entity = taskRepository.findByName(taskRequestDto.getName()).orElseThrow(
-                () -> new NotFoundException("Task with ID = ' ' not found")
-        );
-        TaskEntity entity1 = TaskMapper.INSTANCE.taskEntityFromTaskRequestDto(taskRequestDto);
-        taskRepository.save(entity1);
-        TaskResponseDto responseDto = TaskMapper.INSTANCE.taskResponseDtoFromTaskEntity(entity1);
-        return responseDto;
-
-    }
-
-    @Transactional
-    @Override
-    public TaskResponseDto deleteTask(UUID id) throws NullPointerException {
+    public TaskResponseDto updateTask(Long id, TaskRequestDto taskRequestDto) throws NullPointerException {
         TaskEntity entity = taskRepository.findById(id).orElseThrow(
-                () -> new NotFoundException("Task with ID = ' ' not found")
+                () -> new NotFoundException(String.format("Task with ID = %d not found", id))
+        );
+        entity.setName(taskRequestDto.getName());
+        entity.setAuthor(taskRequestDto.getAuthor());
+        entity.setExecutor(taskRequestDto.getExecutor());
+        entity.setStatus(taskRequestDto.getStatus());
+        entity.setPriority(taskRequestDto.getPriority());
+        entity.setType(taskRequestDto.getType());
+        entity.setVersion(taskRequestDto.getVersion());
+        entity.setDateStart(taskRequestDto.getDateStart());
+        entity.setDateEnd(taskRequestDto.getDateEnd());
+        TaskResponseDto responseDto = INSTANCE.taskResponseDtoFromTaskEntity(entity);
+        return responseDto;
+
+    }
+
+    @Transactional
+    @Override
+    public TaskResponseDto deleteTask(Long id) throws NullPointerException {
+        TaskEntity entity = taskRepository.findById(id).orElseThrow(
+                () -> new NotFoundException(String.format("Task with ID = %d not found", id))
         );
         taskRepository.delete(entity);
-        TaskResponseDto responseDto = TaskMapper.INSTANCE.taskResponseDtoFromTaskEntity(entity);
+        TaskResponseDto responseDto = INSTANCE.taskResponseDtoFromTaskEntity(entity);
         return responseDto;
     }
 }

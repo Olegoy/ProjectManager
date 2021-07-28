@@ -7,27 +7,30 @@ import com.example.yashkin.repository.ReleaseRepository;
 import com.example.yashkin.rest.dto.ReleaseRequestDto;
 import com.example.yashkin.rest.dto.ReleaseResponseDto;
 import com.example.yashkin.service.ReleaseService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.UUID;
 
 @Service
 public class ReleaseServiceImpl implements ReleaseService {
 
-    @Autowired
     private ReleaseRepository releaseRepository;
+
+    private ReleaseMapper INSTANCE;
+
+    public ReleaseServiceImpl(ReleaseRepository releaseRepository, ReleaseMapper INSTANCE) {
+        this.releaseRepository = releaseRepository;
+        this.INSTANCE = INSTANCE;
+    }
 
     @Transactional
     @Override
-    public ReleaseResponseDto getById(UUID id) throws NullPointerException {
+    public ReleaseResponseDto getById(Long id) throws NullPointerException {
 
         ReleaseEntity releaseEntity = releaseRepository.findById(id).orElseThrow(
-                () -> new NotFoundException("Release with ID = ' ' not found")
+                () -> new NotFoundException(String.format("Release with ID = %d not found", id))
         );
 
-        ReleaseResponseDto responseDto = ReleaseMapper.INSTANCE.releaseResponseDtoFromReleaseEntity(releaseEntity);
+        ReleaseResponseDto responseDto = INSTANCE.releaseResponseDtoFromReleaseEntity(releaseEntity);
 
         return responseDto;
 
@@ -37,34 +40,35 @@ public class ReleaseServiceImpl implements ReleaseService {
     @Override
     public ReleaseResponseDto addRelease(ReleaseRequestDto releaseRequestDto) {
 
-        ReleaseEntity entity = ReleaseMapper.INSTANCE.releaseEntityFromReleaseRequestDto(releaseRequestDto);
+        ReleaseEntity entity = INSTANCE.releaseEntityFromReleaseRequestDto(releaseRequestDto);
         releaseRepository.save(entity);
 
-        ReleaseResponseDto responseDto = ReleaseMapper.INSTANCE.releaseResponseDtoFromReleaseEntity(entity);
+        ReleaseResponseDto responseDto = INSTANCE.releaseResponseDtoFromReleaseEntity(entity);
         return  responseDto;
 
     }
 
     @Transactional
     @Override
-    public ReleaseResponseDto updateRelease(Integer version, ReleaseRequestDto releaseRequestDto) throws NullPointerException {
-        ReleaseEntity entity = releaseRepository.findByName(releaseRequestDto.getVersion()).orElseThrow(
-                () -> new NotFoundException("Release with ID = ' ' not found")
+    public ReleaseResponseDto updateRelease(Long id, ReleaseRequestDto releaseRequestDto) throws NullPointerException {
+        ReleaseEntity entity = releaseRepository.findById(id).orElseThrow(
+                () -> new NotFoundException(String.format("Release with ID = %d not found", id))
         );
-        ReleaseEntity entity1 = ReleaseMapper.INSTANCE.releaseEntityFromReleaseRequestDto(releaseRequestDto);
-        releaseRepository.save(entity1);
-        ReleaseResponseDto responseDto = ReleaseMapper.INSTANCE.releaseResponseDtoFromReleaseEntity(entity1);
+        entity.setVersion(releaseRequestDto.getVersion());
+        entity.setDateStart(releaseRequestDto.getDateStart());
+        entity.setDateEnd(releaseRequestDto.getDateEnd());
+        ReleaseResponseDto responseDto = INSTANCE.releaseResponseDtoFromReleaseEntity(entity);
         return responseDto;
     }
 
     @Transactional
     @Override
-    public ReleaseResponseDto deleteRelease(UUID id) throws NullPointerException {
+    public ReleaseResponseDto deleteRelease(Long id) throws NullPointerException {
         ReleaseEntity entity = releaseRepository.findById(id).orElseThrow(
-                () -> new NotFoundException("Release with ID = ' ' not found")
+                () -> new NotFoundException(String.format("Release with ID = %d not found", id))
         );
         releaseRepository.delete(entity);
-        ReleaseResponseDto responseDto = ReleaseMapper.INSTANCE.releaseResponseDtoFromReleaseEntity(entity);
+        ReleaseResponseDto responseDto = INSTANCE.releaseResponseDtoFromReleaseEntity(entity);
         return responseDto;
     }
 }

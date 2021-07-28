@@ -7,26 +7,29 @@ import com.example.yashkin.repository.ProjectRepository;
 import com.example.yashkin.rest.dto.ProjectRequestDto;
 import com.example.yashkin.rest.dto.ProjectResponseDto;
 import com.example.yashkin.service.ProjectService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.UUID;
 
 @Service
 public class ProjectServiceImpl implements ProjectService {
 
-    @Autowired
     private ProjectRepository projectRepository;
+
+    private ProjectMapper INSTANCE;
+
+    public ProjectServiceImpl(ProjectRepository projectRepository, ProjectMapper INSTANCE) {
+        this.projectRepository = projectRepository;
+        this.INSTANCE = INSTANCE;
+    }
 
     @Transactional
     @Override
-    public ProjectResponseDto getById(UUID id) throws NullPointerException {
+    public ProjectResponseDto getById(Long id) throws NullPointerException {
         ProjectEntity projectEntity = projectRepository.findById(id).orElseThrow(
-                () -> new NotFoundException("Project with ID = ' ' not found")
+                () -> new NotFoundException(String.format("Project with ID = %d not found", id))
         );
 
-        ProjectResponseDto projectResponseDto = ProjectMapper.INSTANCE.projectResponseDtoFromProjectEntity(projectEntity);
+        ProjectResponseDto projectResponseDto = INSTANCE.projectResponseDtoFromProjectEntity(projectEntity);
 
         return projectResponseDto;
     }
@@ -34,9 +37,11 @@ public class ProjectServiceImpl implements ProjectService {
     @Transactional
     @Override
     public ProjectResponseDto addProject(ProjectRequestDto projectRequestDto) {
-        ProjectEntity entity = ProjectMapper.INSTANCE.projectEntityFromProjectRequestDto(projectRequestDto);
-        projectRepository.save(entity);
-        ProjectResponseDto projectResponseDto = ProjectMapper.INSTANCE.projectResponseDtoFromProjectEntity(entity);
+        ProjectEntity entity = INSTANCE.projectEntityFromProjectRequestDto(projectRequestDto);
+        entity.setCustomer(projectRequestDto.getCustomer());
+        entity.setProjectName(projectRequestDto.getProjectName());
+        entity.setStatus(projectRequestDto.getStatus());
+        ProjectResponseDto projectResponseDto = INSTANCE.projectResponseDtoFromProjectEntity(entity);
 
         return  projectResponseDto;
         //return entity;
@@ -44,24 +49,24 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Transactional
     @Override
-    public ProjectResponseDto updateProject(ProjectRequestDto projectRequestDto) throws NullPointerException {
-        ProjectEntity entity = projectRepository.findByProjectName(projectRequestDto.getName()).orElseThrow(
-                () -> new NotFoundException("Project with Name = ' ' not found")
+    public ProjectResponseDto updateProject(Long id, ProjectRequestDto projectRequestDto) throws NullPointerException {
+        ProjectEntity entity = projectRepository.findById(id).orElseThrow(
+                () -> new NotFoundException(String.format("Project with ID = %d not found", id))
         );
-        ProjectEntity entity1 = ProjectMapper.INSTANCE.projectEntityFromProjectRequestDto(projectRequestDto);
+        ProjectEntity entity1 = INSTANCE.projectEntityFromProjectRequestDto(projectRequestDto);
         projectRepository.save(entity1);
-        ProjectResponseDto projectResponseDto = ProjectMapper.INSTANCE.projectResponseDtoFromProjectEntity(entity1);
+        ProjectResponseDto projectResponseDto = INSTANCE.projectResponseDtoFromProjectEntity(entity1);
         return projectResponseDto;
     }
 
     @Transactional
     @Override
-    public ProjectResponseDto deleteProject(UUID id) throws NullPointerException {
+    public ProjectResponseDto deleteProject(Long id) throws NullPointerException {
         ProjectEntity entity = projectRepository.findById(id).orElseThrow(
-                () -> new NotFoundException("Project with ID = ' ' not found")
+                () -> new NotFoundException(String.format("Project with ID = %d not found", id))
         );
         projectRepository.delete(entity);
-        ProjectResponseDto projectResponseDto = ProjectMapper.INSTANCE.projectResponseDtoFromProjectEntity(entity);
+        ProjectResponseDto projectResponseDto = INSTANCE.projectResponseDtoFromProjectEntity(entity);
         return projectResponseDto;
     }
 }

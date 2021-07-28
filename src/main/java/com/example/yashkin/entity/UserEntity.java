@@ -1,8 +1,18 @@
 package com.example.yashkin.entity;
 
-import javax.persistence.*;
-import java.util.List;
-import java.util.UUID;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -10,7 +20,7 @@ public class UserEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private UUID id;
+    private Long id;
 
     @Column(name = "first_name")
     private String firstName;
@@ -22,15 +32,15 @@ public class UserEntity {
     @Column(name = "role")
     private String role;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user_customer")
-    private List<ProjectEntity> projects;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "userCustomer")
+    private Set<ProjectEntity> projects;
 
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(name = "person_companies",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "company_id")
     )
-    private List<TaskEntity> tasks;
+    private Set<TaskEntity> tasks;
 
     public UserEntity() {
     }
@@ -41,11 +51,11 @@ public class UserEntity {
         this.role = role;
     }
 
-    public UUID getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(UUID id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
