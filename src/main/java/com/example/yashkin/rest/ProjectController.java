@@ -2,7 +2,7 @@ package com.example.yashkin.rest;
 
 import com.example.yashkin.rest.dto.ProjectRequestDto;
 import com.example.yashkin.rest.dto.ProjectResponseDto;
-import com.example.yashkin.rest.dto.UserResponseDto;
+import com.example.yashkin.service.ProjectService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
@@ -18,51 +18,62 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Tag(name = "Проект", description = "CRUD Проекта")
 @RestController
-@RequestMapping("/api/rest/projects")
+@RequestMapping("${project.uri}")
 public class ProjectController {
 
+    private ProjectService projectService;
+
+    public ProjectController(ProjectService projectService) {
+        this.projectService = projectService;
+    }
+
     @Operation(summary = "Получить список проектов")
-    @GetMapping(value = "/projects")
+    @GetMapping("/projects")
     public ResponseEntity<List<ProjectResponseDto>> getProjects() {
         ProjectResponseDto project1 = new ProjectResponseDto("project1", "customer1");
         ProjectResponseDto project2 = new ProjectResponseDto("project2", "customer2");
 
-        List<ProjectResponseDto> results =  List.of(project1, project2);
+        List<ProjectResponseDto> results = new ArrayList<>();
+        results.add(project1);
+        results.add(project2);
         return ResponseEntity.ok().body(results);
     }
 
     @Operation(summary = "Получить проект по id")
-    @GetMapping(value = "/{id}")
+    @GetMapping("/projects/{id}")
     public ResponseEntity<ProjectResponseDto> getProjectById(@PathVariable Long id) {
-        ProjectResponseDto project = new ProjectResponseDto(1L);
-        return new ResponseEntity<>(project, HttpStatus.OK);
+        ProjectResponseDto responseDto = projectService.getById(id);
+        return ResponseEntity.ok().body(responseDto);
     }
 
     @Operation(summary = "Добавить проект")
-    @PostMapping(value = "/projects")
-    public ResponseEntity<ProjectResponseDto> createProject(@RequestBody ProjectRequestDto requestDto) {
+    @PostMapping("/projects")
+    public ResponseEntity<ProjectResponseDto> addProject(@RequestBody ProjectRequestDto requestDto) {
         // добавление в БД
-
-        return ResponseEntity.ok().body(new ProjectResponseDto(requestDto.getName(), requestDto.getCustomer()));
+        ProjectResponseDto responseDto = projectService.addProject(requestDto);
+        return ResponseEntity.ok().body(responseDto);
     }
 
     @Operation(summary = "Обновление проекта")
-    @PutMapping(value = "/projects/{id}")
-    public ResponseEntity<ProjectResponseDto> partialUpdateProject(@PathVariable Long id,
+    @PutMapping("/projects/{id}")
+    public ResponseEntity<ProjectResponseDto> updateProject(@PathVariable Long id,
                                                              @RequestBody ProjectRequestDto requestDto) throws IOException {
         // обновление сущности в БД
-        throw new IOException();
-        //return ResponseEntity.ok().body(new ProjectResponseDto(requestDto.getName(), requestDto.getId()));
+        ProjectResponseDto responseDto = projectService.updateProject(id, requestDto);
+
+        return ResponseEntity.ok().body(responseDto);
     }
 
     @Operation(summary = "Удаление проекта")
-    @DeleteMapping(value = "/projects/{id}")
+    @DeleteMapping("/projects/{id}")
     public ResponseEntity deleteProject(@PathVariable Long id) {
         // удаление сущности из БД
+        ProjectResponseDto responseDto = projectService.deleteProject(id);
 
         return ResponseEntity.ok().build();
     }

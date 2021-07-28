@@ -1,24 +1,36 @@
-package com.example.yashkin.rest.dto;
+package com.example.yashkin.entity;
 
-import com.example.yashkin.entity.ProjectEntity;
 import com.example.yashkin.model.TaskStatus;
-import io.swagger.v3.oas.annotations.media.Schema;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import java.time.LocalDateTime;
+import java.util.Set;
 
-@Schema(description = "Задача")
-public class TaskRequestDto {
+@Entity
+@Table(name = "task")
+public class TaskEntity {
 
-    @Schema(description = "Название задачи")
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
+
+    @Column(name = "name")
     private String name;
 
-    @Schema(description = "Автор задачи")
+    @Column(name = "author")
     private String author;
 
-    @Schema(description = "Исполнитель задачи")
+    @Column(name = "executor")
     private String executor;
 
     @Column(name = "type")
@@ -43,9 +55,42 @@ public class TaskRequestDto {
     @JoinColumn(name = "project_id")
     private ProjectEntity project;
 
-    public TaskRequestDto(String name, String author) {
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "task")
+    private Set<ReleaseEntity> releases;
+
+    @ManyToMany(mappedBy = "tasks")
+    private Set<UserEntity> users;
+
+    public TaskEntity() {
+    }
+
+    public TaskEntity(String name, String author) {
         this.name = name;
         this.author = author;
+    }
+
+    public TaskEntity(Long id, String name, String author, String executor, String type, TaskStatus status, Integer priority, Integer version, LocalDateTime dateStart, LocalDateTime dateEnd, ProjectEntity project, Set<ReleaseEntity> releases, Set<UserEntity> users) {
+        this.id = id;
+        this.name = name;
+        this.author = author;
+        this.executor = executor;
+        this.type = type;
+        this.status = status;
+        this.priority = priority;
+        this.version = version;
+        this.dateStart = dateStart;
+        this.dateEnd = dateEnd;
+        this.project = project;
+        this.releases = releases;
+        this.users = users;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -118,13 +163,5 @@ public class TaskRequestDto {
 
     public void setDateEnd(LocalDateTime dateEnd) {
         this.dateEnd = dateEnd;
-    }
-
-    public ProjectEntity getProject() {
-        return project;
-    }
-
-    public void setProject(ProjectEntity project) {
-        this.project = project;
     }
 }

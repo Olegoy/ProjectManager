@@ -2,6 +2,8 @@ package com.example.yashkin.rest.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
+import javax.persistence.Column;
+
 @Schema(description = "Пользователь")
 public class UserRequestDto {
 
@@ -9,11 +11,20 @@ public class UserRequestDto {
     private String firstName;
 
     @Schema(description = "Фамилия пользователя")
-    private String secondName;
+    private String lastName;
 
-    public UserRequestDto(String firstName, String secondName) {
+    @Column(name = "role")
+    private String role;
+
+    public UserRequestDto(String firstName, String lastName) {
         this.firstName = firstName;
-        this.secondName = secondName;
+        this.lastName = lastName;
+    }
+
+    public UserRequestDto(String firstName, String lastName, String role) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.role = role;
     }
 
     public String getFirstName() {
@@ -24,12 +35,19 @@ public class UserRequestDto {
         this.firstName = firstName;
     }
 
-    public String getSecondName() {
-        return secondName;
+    public String getLastName() {
+        return lastName;
     }
 
-    public void setSecondName(String secondName) {
-        this.secondName = secondName;
+    public void setLastName(String lastName) {
+        this.lastName = lastName;
     }
 
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
 }

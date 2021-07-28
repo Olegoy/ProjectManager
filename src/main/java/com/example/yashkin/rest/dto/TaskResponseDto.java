@@ -1,5 +1,6 @@
 package com.example.yashkin.rest.dto;
 
+import com.example.yashkin.model.TaskStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDateTime;
@@ -26,7 +27,7 @@ public class TaskResponseDto {
     private String type;
 
     @Schema(description = "Статус задачи")
-    private String status;
+    private TaskStatus status;
 
     @Schema(description = "Приоритет задачи")
     private Long priority;
@@ -100,11 +101,11 @@ public class TaskResponseDto {
         this.type = type;
     }
 
-    public String getStatus() {
+    public TaskStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(TaskStatus status) {
         this.status = status;
     }
 
