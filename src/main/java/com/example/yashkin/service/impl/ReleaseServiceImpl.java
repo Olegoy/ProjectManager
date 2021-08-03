@@ -7,17 +7,22 @@ import com.example.yashkin.repository.ReleaseRepository;
 import com.example.yashkin.rest.dto.ReleaseRequestDto;
 import com.example.yashkin.rest.dto.ReleaseResponseDto;
 import com.example.yashkin.service.ReleaseService;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class ReleaseServiceImpl implements ReleaseService {
 
-    private ReleaseRepository releaseRepository;
+    private static Logger log = LoggerFactory.getLogger(ReleaseServiceImpl.class);
 
+    private ReleaseRepository releaseRepository;
     private ReleaseMapper INSTANCE;
 
-    public ReleaseServiceImpl(ReleaseRepository releaseRepository, ReleaseMapper INSTANCE) {
+    public ReleaseServiceImpl(ReleaseRepository releaseRepository, @Qualifier("releaseMapperImpl") ReleaseMapper INSTANCE) {
         this.releaseRepository = releaseRepository;
         this.INSTANCE = INSTANCE;
     }
@@ -31,7 +36,7 @@ public class ReleaseServiceImpl implements ReleaseService {
         );
 
         ReleaseResponseDto responseDto = INSTANCE.releaseResponseDtoFromReleaseEntity(releaseEntity);
-
+        log.info("release got by id");
         return responseDto;
 
     }
@@ -44,6 +49,7 @@ public class ReleaseServiceImpl implements ReleaseService {
         releaseRepository.save(entity);
 
         ReleaseResponseDto responseDto = INSTANCE.releaseResponseDtoFromReleaseEntity(entity);
+        log.info("release added");
         return  responseDto;
 
     }
@@ -58,6 +64,7 @@ public class ReleaseServiceImpl implements ReleaseService {
         entity.setDateStart(releaseRequestDto.getDateStart());
         entity.setDateEnd(releaseRequestDto.getDateEnd());
         ReleaseResponseDto responseDto = INSTANCE.releaseResponseDtoFromReleaseEntity(entity);
+        log.info("release updated");
         return responseDto;
     }
 
@@ -69,6 +76,7 @@ public class ReleaseServiceImpl implements ReleaseService {
         );
         releaseRepository.delete(entity);
         ReleaseResponseDto responseDto = INSTANCE.releaseResponseDtoFromReleaseEntity(entity);
+        log.info("release deleted");
         return responseDto;
     }
 }

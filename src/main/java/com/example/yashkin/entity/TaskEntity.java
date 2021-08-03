@@ -2,19 +2,16 @@ package com.example.yashkin.entity;
 
 import com.example.yashkin.model.TaskStatus;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import java.time.LocalDateTime;
-import java.util.Set;
 
 @Entity
 @Table(name = "task")
@@ -27,62 +24,37 @@ public class TaskEntity {
     @Column(name = "name")
     private String name;
 
-    @Column(name = "author")
-    private String author;
-
-    @Column(name = "executor")
-    private String executor;
+    @ManyToOne
+    @JoinColumn(name = "author_id", nullable = false)
+    private UserEntity author;
+    @ManyToOne
+    @JoinColumn(name = "executor_id")
+    private UserEntity executor;
 
     @Column(name = "type")
     private String type;
 
     @Column(name = "status")
+    @Enumerated(EnumType.STRING)
     private TaskStatus status;
 
     @Column(name = "priority")
     private Integer priority;
 
-    @Column(name = "version")
-    private Integer version;
-
-    @Column(name = "date_start")
-    private LocalDateTime dateStart;
-
-    @Column(name = "date_end")
-    private LocalDateTime dateEnd;
-
     @ManyToOne
     @JoinColumn(name = "project_id")
-    private ProjectEntity project;
+    private ProjectEntity projectId;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "task")
-    private Set<ReleaseEntity> releases;
-
-    @ManyToMany(mappedBy = "tasks")
-    private Set<UserEntity> users;
+    @ManyToOne
+    @JoinColumn(name = "release_id")
+    private ReleaseEntity release;
 
     public TaskEntity() {
     }
 
-    public TaskEntity(String name, String author) {
+    public TaskEntity(String name, UserEntity author) {
         this.name = name;
         this.author = author;
-    }
-
-    public TaskEntity(Long id, String name, String author, String executor, String type, TaskStatus status, Integer priority, Integer version, LocalDateTime dateStart, LocalDateTime dateEnd, ProjectEntity project, Set<ReleaseEntity> releases, Set<UserEntity> users) {
-        this.id = id;
-        this.name = name;
-        this.author = author;
-        this.executor = executor;
-        this.type = type;
-        this.status = status;
-        this.priority = priority;
-        this.version = version;
-        this.dateStart = dateStart;
-        this.dateEnd = dateEnd;
-        this.project = project;
-        this.releases = releases;
-        this.users = users;
     }
 
     public Long getId() {
@@ -101,19 +73,19 @@ public class TaskEntity {
         this.name = name;
     }
 
-    public String getAuthor() {
+    public UserEntity getAuthor() {
         return author;
     }
 
-    public void setAuthor(String author) {
+    public void setAuthor(UserEntity author) {
         this.author = author;
     }
 
-    public String getExecutor() {
+    public UserEntity getExecutor() {
         return executor;
     }
 
-    public void setExecutor(String executor) {
+    public void setExecutor(UserEntity executor) {
         this.executor = executor;
     }
 
@@ -141,27 +113,19 @@ public class TaskEntity {
         this.priority = priority;
     }
 
-    public Integer getVersion() {
-        return version;
+    public ProjectEntity getProjectId() {
+        return projectId;
     }
 
-    public void setVersion(Integer version) {
-        this.version = version;
+    public void setProjectId(ProjectEntity projectId) {
+        this.projectId = projectId;
     }
 
-    public LocalDateTime getDateStart() {
-        return dateStart;
+    public ReleaseEntity getRelease() {
+        return release;
     }
 
-    public void setDateStart(LocalDateTime dateStart) {
-        this.dateStart = dateStart;
-    }
-
-    public LocalDateTime getDateEnd() {
-        return dateEnd;
-    }
-
-    public void setDateEnd(LocalDateTime dateEnd) {
-        this.dateEnd = dateEnd;
+    public void setRelease(ReleaseEntity release) {
+        this.release = release;
     }
 }

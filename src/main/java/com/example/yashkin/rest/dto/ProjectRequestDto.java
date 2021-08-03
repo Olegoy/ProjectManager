@@ -10,12 +10,12 @@ public class ProjectRequestDto {
     private String projectName;
 
     @Schema(description = "Заказчик проекта")
-    private String customer;
+    private UserRequestDto customer;
 
     @Schema(description = "Статус проекта")
     private ProjectStatus status;
 
-    public ProjectRequestDto(String projectName, String customer) {
+    public ProjectRequestDto(String projectName, UserRequestDto customer) {
         this.projectName = projectName;
         this.customer = customer;
     }
@@ -28,11 +28,11 @@ public class ProjectRequestDto {
         this.projectName = projectName;
     }
 
-    public String getCustomer() {
+    public UserRequestDto getCustomer() {
         return customer;
     }
 
-    public void setCustomer(String customer) {
+    public void setCustomer(UserRequestDto customer) {
         this.customer = customer;
     }
 

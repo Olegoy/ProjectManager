@@ -2,7 +2,9 @@ package com.example.yashkin.rest;
 
 import com.example.yashkin.rest.dto.ProjectRequestDto;
 import com.example.yashkin.rest.dto.ProjectResponseDto;
+import com.example.yashkin.rest.dto.TaskResponseDto;
 import com.example.yashkin.service.ProjectService;
+import com.example.yashkin.service.TaskService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
@@ -28,20 +30,25 @@ public class ProjectController {
 
     private ProjectService projectService;
 
+    private TaskService taskService;
+
+    public ProjectController() {
+    }
+
     public ProjectController(ProjectService projectService) {
         this.projectService = projectService;
     }
 
+    public ProjectController(ProjectService projectService, TaskService taskService) {
+        this.projectService = projectService;
+        this.taskService = taskService;
+    }
+
     @Operation(summary = "Получить список проектов")
     @GetMapping("/projects")
-    public ResponseEntity<List<ProjectResponseDto>> getProjects() {
-        ProjectResponseDto project1 = new ProjectResponseDto("project1", "customer1");
-        ProjectResponseDto project2 = new ProjectResponseDto("project2", "customer2");
-
-        List<ProjectResponseDto> results = new ArrayList<>();
-        results.add(project1);
-        results.add(project2);
-        return ResponseEntity.ok().body(results);
+    public ResponseEntity<List<ProjectResponseDto>> getAllProjects() {
+        List<ProjectResponseDto> projectResponseDto = projectService.getAllProjects();
+        return ResponseEntity.ok().body(projectResponseDto);
     }
 
     @Operation(summary = "Получить проект по id")
@@ -76,6 +83,31 @@ public class ProjectController {
         ProjectResponseDto responseDto = projectService.deleteProject(id);
 
         return ResponseEntity.ok().build();
+    }
+
+    @Operation(summary = "Завершение проекта")
+    @PutMapping("/projects/{id}/finished")
+    public ResponseEntity<String> finishedProject(@PathVariable Long id) throws IOException {
+
+        ResponseEntity<String> responseEntity = new ResponseEntity<>(
+                String.format("Проект с id #%d не может быть завершен", id),
+                HttpStatus.OK
+        );
+        long count = 0L;
+        for (TaskResponseDto taskResponseDto : taskService.unfinishedTasksByProjectId(id)) {
+            count++;
+        }
+        boolean projectIsFinished = count < 1;
+        if(projectIsFinished) {
+            projectService.setFinishedStatusProject(id);
+            responseEntity = new ResponseEntity<>(
+                    String.format("Проект с id #%d был успешно завершен", id),
+                    HttpStatus.OK
+            );
+        }
+
+        return responseEntity;
+
     }
 
     @ExceptionHandler(IOException.class)

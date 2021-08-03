@@ -25,7 +25,6 @@ public class UserEntity {
     @Column(name = "first_name")
     private String firstName;
 
-
     @Column(name = "last_name")
     private String lastName;
 
@@ -35,12 +34,11 @@ public class UserEntity {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "userCustomer")
     private Set<ProjectEntity> projects;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinTable(name = "person_companies",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "company_id")
-    )
-    private Set<TaskEntity> tasks;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "author")
+    private Set<TaskEntity> tasksAsAuthor;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "executor")
+    private Set<TaskEntity> tasksAsExecutor;
 
     public UserEntity() {
     }

@@ -5,6 +5,8 @@ import com.example.yashkin.model.ProjectStatus;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -26,17 +28,16 @@ public class ProjectEntity {
     private String projectName;
 
     @Column(name = "status")
+    @Enumerated(EnumType.STRING)
     private ProjectStatus status;
 
-    @Column(name = "customer")
-    private String customer;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "project")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "projectId")
     private Set<TaskEntity> tasks;
 
     @ManyToOne
     @JoinColumn(name = "customer_id")
-    private UserEntity userCustomer;
+    private UserEntity customer;
 
     public ProjectEntity() {
     }
@@ -45,13 +46,12 @@ public class ProjectEntity {
         this.projectName = projectName;
     }
 
-    public ProjectEntity(Long id, String projectName, ProjectStatus status, String customer, Set<TaskEntity> tasks, UserEntity userCustomer) {
+    public ProjectEntity(Long id, String projectName, ProjectStatus status, Set<TaskEntity> tasks, UserEntity customer) {
         this.id = id;
         this.projectName = projectName;
         this.status = status;
-        this.customer = customer;
         this.tasks = tasks;
-        this.userCustomer = userCustomer;
+        this.customer = customer;
     }
 
     public Long getId() {
@@ -78,11 +78,19 @@ public class ProjectEntity {
         this.status = status;
     }
 
-    public String getCustomer() {
+    public Set<TaskEntity> getTasks() {
+        return tasks;
+    }
+
+    public void setTasks(Set<TaskEntity> tasks) {
+        this.tasks = tasks;
+    }
+
+    public UserEntity getCustomer() {
         return customer;
     }
 
-    public void setCustomer(String customer) {
+    public void setCustomer(UserEntity customer) {
         this.customer = customer;
     }
 }

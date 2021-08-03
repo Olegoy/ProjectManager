@@ -7,17 +7,22 @@ import com.example.yashkin.repository.UserRepository;
 import com.example.yashkin.rest.dto.UserRequestDto;
 import com.example.yashkin.rest.dto.UserResponseDto;
 import com.example.yashkin.service.UserService;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class UserServiceImpl implements UserService {
 
-    private UserRepository userRepository;
+    private static Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
 
+    private UserRepository userRepository;
     private UserMapper INSTANCE;
 
-    public UserServiceImpl(UserRepository userRepository, UserMapper INSTANCE) {
+    public UserServiceImpl(UserRepository userRepository, @Qualifier("userMapperImpl") UserMapper INSTANCE) {
         this.userRepository = userRepository;
         this.INSTANCE = INSTANCE;
     }
@@ -31,7 +36,7 @@ public class UserServiceImpl implements UserService {
         );
 
         UserResponseDto responseDto = INSTANCE.userResponseDtoFromUserEntity(userEntity);
-
+        log.info("user got by id");
         return responseDto;
 
     }
@@ -44,6 +49,7 @@ public class UserServiceImpl implements UserService {
         userRepository.save(entity);
 
         UserResponseDto responseDto = INSTANCE.userResponseDtoFromUserEntity(entity);
+        log.info("user added");
         return responseDto;
 
     }
@@ -58,6 +64,7 @@ public class UserServiceImpl implements UserService {
         entity.setLastName(userRequestDto.getLastName());
         entity.setRole(userRequestDto.getRole());
         UserResponseDto responseDto = INSTANCE.userResponseDtoFromUserEntity(entity);
+        log.info("user updated");
         return responseDto;
 
     }
@@ -70,6 +77,7 @@ public class UserServiceImpl implements UserService {
         );
         userRepository.delete(entity);
         UserResponseDto responseDto = INSTANCE.userResponseDtoFromUserEntity(entity);
+        log.info("user deleted");
         return responseDto;
 
     }

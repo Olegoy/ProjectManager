@@ -1,13 +1,7 @@
 package com.example.yashkin.rest.dto;
 
-import com.example.yashkin.entity.ProjectEntity;
 import com.example.yashkin.model.TaskStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
-
-import javax.persistence.Column;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import java.time.LocalDateTime;
 
 @Schema(description = "Задача")
 public class TaskRequestDto {
@@ -16,36 +10,40 @@ public class TaskRequestDto {
     private String name;
 
     @Schema(description = "Автор задачи")
-    private String author;
+    private UserRequestDto author;
 
     @Schema(description = "Исполнитель задачи")
-    private String executor;
+    private UserRequestDto executor;
 
-    @Column(name = "type")
+    @Schema(description = "Тип задачи")
     private String type;
 
-    @Column(name = "status")
+    @Schema(description = "Статус задачи")
     private TaskStatus status;
 
-    @Column(name = "priority")
+    @Schema(description = "Приоритет задачи")
     private Integer priority;
 
-    @Column(name = "version")
-    private Integer version;
+    @Schema(description = "Релиз задачи")
+    private ReleaseRequestDto release;
 
-    @Column(name = "date_start")
-    private LocalDateTime dateStart;
+    @Schema(description = "Проект, к которому относится задача")
+    private ReleaseRequestDto projectId;
 
-    @Column(name = "date_end")
-    private LocalDateTime dateEnd;
-
-    @ManyToOne
-    @JoinColumn(name = "project_id")
-    private ProjectEntity project;
-
-    public TaskRequestDto(String name, String author) {
+    public TaskRequestDto(String name, UserRequestDto author) {
         this.name = name;
         this.author = author;
+    }
+
+    public TaskRequestDto(String name, UserRequestDto author, UserRequestDto executor, String type, TaskStatus status, Integer priority, ReleaseRequestDto release, ReleaseRequestDto projectId) {
+        this.name = name;
+        this.author = author;
+        this.executor = executor;
+        this.type = type;
+        this.status = status;
+        this.priority = priority;
+        this.release = release;
+        this.projectId = projectId;
     }
 
     public String getName() {
@@ -56,19 +54,19 @@ public class TaskRequestDto {
         this.name = name;
     }
 
-    public String getAuthor() {
+    public UserRequestDto getAuthor() {
         return author;
     }
 
-    public void setAuthor(String author) {
+    public void setAuthor(UserRequestDto author) {
         this.author = author;
     }
 
-    public String getExecutor() {
+    public UserRequestDto getExecutor() {
         return executor;
     }
 
-    public void setExecutor(String executor) {
+    public void setExecutor(UserRequestDto executor) {
         this.executor = executor;
     }
 
@@ -96,35 +94,19 @@ public class TaskRequestDto {
         this.priority = priority;
     }
 
-    public Integer getVersion() {
-        return version;
+    public ReleaseRequestDto getRelease() {
+        return release;
     }
 
-    public void setVersion(Integer version) {
-        this.version = version;
+    public void setRelease(ReleaseRequestDto release) {
+        this.release = release;
     }
 
-    public LocalDateTime getDateStart() {
-        return dateStart;
+    public ReleaseRequestDto getProjectId() {
+        return projectId;
     }
 
-    public void setDateStart(LocalDateTime dateStart) {
-        this.dateStart = dateStart;
-    }
-
-    public LocalDateTime getDateEnd() {
-        return dateEnd;
-    }
-
-    public void setDateEnd(LocalDateTime dateEnd) {
-        this.dateEnd = dateEnd;
-    }
-
-    public ProjectEntity getProject() {
-        return project;
-    }
-
-    public void setProject(ProjectEntity project) {
-        this.project = project;
+    public void setProjectId(ReleaseRequestDto projectId) {
+        this.projectId = projectId;
     }
 }
