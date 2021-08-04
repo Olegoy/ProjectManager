@@ -14,8 +14,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,13 +29,13 @@ public class TaskServiceImpl implements TaskService {
     private final UserRepository userRepository;
     private final ReleaseRepository releaseRepository;
 
-    private final TaskMapper INSTANCE;
+    private final TaskMapper taskMapper;
 
     public TaskServiceImpl(TaskRepository taskRepository, UserRepository userRepository, ReleaseRepository releaseRepository, @Qualifier("taskMapperImpl") TaskMapper INSTANCE) {
         this.taskRepository = taskRepository;
         this.userRepository = userRepository;
         this.releaseRepository = releaseRepository;
-        this.INSTANCE = INSTANCE;
+        this.taskMapper = INSTANCE;
     }
 
     @Transactional
@@ -45,7 +45,7 @@ public class TaskServiceImpl implements TaskService {
                 () -> new NotFoundException(String.format("Task with ID = %d not found", id))
         );
 
-        TaskResponseDto responseDto = INSTANCE.taskResponseDtoFromTaskEntity(taskEntity);
+        TaskResponseDto responseDto = taskMapper.taskResponseDtoFromTaskEntity(taskEntity);
         log.info("task got by id");
         return responseDto;
 
@@ -55,10 +55,10 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public TaskResponseDto addTask(TaskRequestDto taskRequestDto) {
 
-        TaskEntity entity = INSTANCE.taskEntityFromTaskRequestDto(taskRequestDto);
+        TaskEntity entity = taskMapper.taskEntityFromTaskRequestDto(taskRequestDto);
         taskRepository.save(entity);
 
-        TaskResponseDto responseDto = INSTANCE.taskResponseDtoFromTaskEntity(entity);
+        TaskResponseDto responseDto = taskMapper.taskResponseDtoFromTaskEntity(entity);
         log.info("task added");
         return responseDto;
 
@@ -71,13 +71,13 @@ public class TaskServiceImpl implements TaskService {
                 () -> new NotFoundException(String.format("Task with ID = %d not found", id))
         );
         entity.setName(taskRequestDto.getName());
-        entity.setAuthor(INSTANCE.taskEntityFromTaskRequestDto(taskRequestDto).getAuthor());
-        entity.setExecutor(INSTANCE.taskEntityFromTaskRequestDto(taskRequestDto).getExecutor());
+        entity.setAuthor(taskMapper.taskEntityFromTaskRequestDto(taskRequestDto).getAuthor());
+        entity.setExecutor(taskMapper.taskEntityFromTaskRequestDto(taskRequestDto).getExecutor());
         entity.setStatus(taskRequestDto.getStatus());
         entity.setPriority(taskRequestDto.getPriority());
         entity.setType(taskRequestDto.getType());
-        entity.setRelease(INSTANCE.taskEntityFromTaskRequestDto(taskRequestDto).getRelease());
-        TaskResponseDto responseDto = INSTANCE.taskResponseDtoFromTaskEntity(entity);
+        entity.setRelease(taskMapper.taskEntityFromTaskRequestDto(taskRequestDto).getRelease());
+        TaskResponseDto responseDto = taskMapper.taskResponseDtoFromTaskEntity(entity);
         log.info("task updated");
         return responseDto;
 
@@ -90,7 +90,7 @@ public class TaskServiceImpl implements TaskService {
                 () -> new NotFoundException(String.format("Task with ID = %d not found", id))
         );
         taskRepository.delete(entity);
-        TaskResponseDto responseDto = INSTANCE.taskResponseDtoFromTaskEntity(entity);
+        TaskResponseDto responseDto = taskMapper.taskResponseDtoFromTaskEntity(entity);
         log.info("task deleted");
         return responseDto;
     }
@@ -99,13 +99,11 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public List<TaskResponseDto> unfinishedTasksByRelease(Long releaseId) {
         List<TaskEntity> tasksByRelease = taskRepository.findAllByRelease(releaseId);
-        List<TaskResponseDto> unfinishedTasks = new ArrayList<>();
-        for(TaskEntity taskEntity: tasksByRelease) {
-            if(!taskEntity.getStatus().toString().equals("DONE")) {
-                TaskResponseDto taskResponseDto = INSTANCE.taskResponseDtoFromTaskEntity(taskEntity);
-                unfinishedTasks.add(taskResponseDto);
-            }
-        }
+        List<TaskResponseDto> unfinishedTasks = tasksByRelease.stream()
+                .filter((s) -> !s.getStatus().toString().equals("DONE"))
+                .map(taskMapper::taskResponseDtoFromTaskEntity)
+                .collect(Collectors.toList());
+
         log.info("got unfinished tasks by release");
         return unfinishedTasks;
     }
@@ -114,10 +112,10 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public List<TaskResponseDto> getAllTask() {
         List<TaskEntity> allTasksEntity = taskRepository.findAll();
-        List<TaskResponseDto> allTasks = new ArrayList<>();
-        for(TaskEntity taskEntity: allTasksEntity) {
-            allTasks.add(INSTANCE.taskResponseDtoFromTaskEntity(taskEntity));
-        }
+        List<TaskResponseDto> allTasks = allTasksEntity.stream()
+                .map(taskMapper::taskResponseDtoFromTaskEntity)
+                .collect(Collectors.toList());
+
         log.info("got all tasks");
         return allTasks;
     }
@@ -126,13 +124,12 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public List<TaskResponseDto> unfinishedTasksByProjectId(Long projectId) {
         List<TaskEntity> tasksByProject = taskRepository.findAllByProjectId(projectId);
-        List<TaskResponseDto> unfinishedTasks = new ArrayList<>();
-        for(TaskEntity taskEntity: tasksByProject) {
-            if(!taskEntity.getStatus().toString().equals("DONE")) {
-                TaskResponseDto taskResponseDto = INSTANCE.taskResponseDtoFromTaskEntity(taskEntity);
-                unfinishedTasks.add(taskResponseDto);
-            }
-        }
+
+        List<TaskResponseDto> unfinishedTasks = tasksByProject.stream()
+                .filter((s) -> !s.getStatus().toString().equals("DONE"))
+                .map(taskMapper::taskResponseDtoFromTaskEntity)
+                .collect(Collectors.toList());
+
         log.info("got unfinished tasks by project");
         return unfinishedTasks;
     }
@@ -146,7 +143,7 @@ public class TaskServiceImpl implements TaskService {
 
         entity.setStatus(status);
 
-        TaskResponseDto responseDto = INSTANCE.taskResponseDtoFromTaskEntity(entity);
+        TaskResponseDto responseDto = taskMapper.taskResponseDtoFromTaskEntity(entity);
         log.info("changed task's status");
         return responseDto;
     }
@@ -158,7 +155,7 @@ public class TaskServiceImpl implements TaskService {
                 () -> new NotFoundException(String.format("Task with ID = %d not found", id))
         );
         entity.setRelease(releaseRepository.getById(releaseId));
-        TaskResponseDto responseDto = INSTANCE.taskResponseDtoFromTaskEntity(entity);
+        TaskResponseDto responseDto = taskMapper.taskResponseDtoFromTaskEntity(entity);
         log.info("changed task's release");
         return responseDto;
     }
@@ -170,7 +167,7 @@ public class TaskServiceImpl implements TaskService {
                 () -> new NotFoundException(String.format("Task with ID = %d not found", id))
         );
         entity.setExecutor(userRepository.getById(userId));
-        TaskResponseDto responseDto = INSTANCE.taskResponseDtoFromTaskEntity(entity);
+        TaskResponseDto responseDto = taskMapper.taskResponseDtoFromTaskEntity(entity);
         log.info("changed task's executor");
         return responseDto;
     }

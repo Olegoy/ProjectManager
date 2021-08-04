@@ -2,7 +2,6 @@ package com.example.yashkin.rest;
 
 import com.example.yashkin.rest.dto.ProjectRequestDto;
 import com.example.yashkin.rest.dto.ProjectResponseDto;
-import com.example.yashkin.rest.dto.TaskResponseDto;
 import com.example.yashkin.service.ProjectService;
 import com.example.yashkin.service.TaskService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -20,24 +19,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 @Tag(name = "Проект", description = "CRUD Проекта")
 @RestController
-@RequestMapping("${project.uri}")
+@RequestMapping("${project.uri}/projects")
 public class ProjectController {
 
-    private ProjectService projectService;
-
-    private TaskService taskService;
-
-    public ProjectController() {
-    }
-
-    public ProjectController(ProjectService projectService) {
-        this.projectService = projectService;
-    }
+    private final ProjectService projectService;
+    private final TaskService taskService;
 
     public ProjectController(ProjectService projectService, TaskService taskService) {
         this.projectService = projectService;
@@ -45,21 +35,21 @@ public class ProjectController {
     }
 
     @Operation(summary = "Получить список проектов")
-    @GetMapping("/projects")
+    @GetMapping("/")
     public ResponseEntity<List<ProjectResponseDto>> getAllProjects() {
         List<ProjectResponseDto> projectResponseDto = projectService.getAllProjects();
         return ResponseEntity.ok().body(projectResponseDto);
     }
 
     @Operation(summary = "Получить проект по id")
-    @GetMapping("/projects/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<ProjectResponseDto> getProjectById(@PathVariable Long id) {
         ProjectResponseDto responseDto = projectService.getById(id);
         return ResponseEntity.ok().body(responseDto);
     }
 
     @Operation(summary = "Добавить проект")
-    @PostMapping("/projects")
+    @PostMapping("/")
     public ResponseEntity<ProjectResponseDto> addProject(@RequestBody ProjectRequestDto requestDto) {
         // добавление в БД
         ProjectResponseDto responseDto = projectService.addProject(requestDto);
@@ -67,7 +57,7 @@ public class ProjectController {
     }
 
     @Operation(summary = "Обновление проекта")
-    @PutMapping("/projects/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<ProjectResponseDto> updateProject(@PathVariable Long id,
                                                              @RequestBody ProjectRequestDto requestDto) throws IOException {
         // обновление сущности в БД
@@ -77,28 +67,30 @@ public class ProjectController {
     }
 
     @Operation(summary = "Удаление проекта")
-    @DeleteMapping("/projects/{id}")
-    public ResponseEntity deleteProject(@PathVariable Long id) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteProject(@PathVariable Long id) {
         // удаление сущности из БД
         ProjectResponseDto responseDto = projectService.deleteProject(id);
 
-        return ResponseEntity.ok().build();
+        return new ResponseEntity<>(
+                String.format("Проект с id #%d успешно удален", id),
+                HttpStatus.OK
+        );
+
     }
 
     @Operation(summary = "Завершение проекта")
-    @PutMapping("/projects/{id}/finished")
-    public ResponseEntity<String> finishedProject(@PathVariable Long id) throws IOException {
+    @PutMapping("/{id}/finish")
+    public ResponseEntity<String> finishProject(@PathVariable Long id) throws IOException {
 
         ResponseEntity<String> responseEntity = new ResponseEntity<>(
                 String.format("Проект с id #%d не может быть завершен", id),
                 HttpStatus.OK
         );
-        long count = 0L;
-        for (TaskResponseDto taskResponseDto : taskService.unfinishedTasksByProjectId(id)) {
-            count++;
-        }
+
+        long count = taskService.unfinishedTasksByProjectId(id).stream().count();
         boolean projectIsFinished = count < 1;
-        if(projectIsFinished) {
+        if (projectIsFinished) {
             projectService.setFinishedStatusProject(id);
             responseEntity = new ResponseEntity<>(
                     String.format("Проект с id #%d был успешно завершен", id),

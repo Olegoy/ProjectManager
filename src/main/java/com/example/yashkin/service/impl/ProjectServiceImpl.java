@@ -15,8 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ProjectServiceImpl implements ProjectService {
@@ -24,11 +24,11 @@ public class ProjectServiceImpl implements ProjectService {
 
     private ProjectRepository projectRepository;
 
-    private ProjectMapper INSTANCE;
+    private ProjectMapper projectMapper;
 
     public ProjectServiceImpl(ProjectRepository projectRepository, @Qualifier("projectMapperImpl") ProjectMapper INSTANCE) {
         this.projectRepository = projectRepository;
-        this.INSTANCE = INSTANCE;
+        this.projectMapper = INSTANCE;
     }
 
     @Transactional
@@ -36,11 +36,10 @@ public class ProjectServiceImpl implements ProjectService {
     public List<ProjectResponseDto> getAllProjects() {
 
          List<ProjectEntity> allProjectsEntity = projectRepository.findAll();
-        List<ProjectResponseDto> allProjects = new ArrayList<>();
-        for(ProjectEntity projectEntity: allProjectsEntity) {
-            allProjects.add(INSTANCE.projectResponseDtoFromProjectEntity(projectEntity));
-        }
-        log.info("got all projectss");
+        List<ProjectResponseDto> allProjects = allProjectsEntity.stream()
+                .map(s -> projectMapper.projectResponseDtoFromProjectEntity(s))
+                .collect(Collectors.toList());
+        log.info("got all projects");
         return allProjects;
 
     }
@@ -52,7 +51,7 @@ public class ProjectServiceImpl implements ProjectService {
                 () -> new NotFoundException(String.format("Project with ID = %d not found", id))
         );
 
-        ProjectResponseDto projectResponseDto = INSTANCE.projectResponseDtoFromProjectEntity(projectEntity);
+        ProjectResponseDto projectResponseDto = projectMapper.projectResponseDtoFromProjectEntity(projectEntity);
         log.info("project got by id");
 
         return projectResponseDto;
@@ -61,11 +60,11 @@ public class ProjectServiceImpl implements ProjectService {
     @Transactional
     @Override
     public ProjectResponseDto addProject(ProjectRequestDto projectRequestDto) {
-        ProjectEntity entity = INSTANCE.projectEntityFromProjectRequestDto(projectRequestDto);
-        entity.setCustomer(INSTANCE.projectEntityFromProjectRequestDto(projectRequestDto).getCustomer());
+        ProjectEntity entity = projectMapper.projectEntityFromProjectRequestDto(projectRequestDto);
+        entity.setCustomer(projectMapper.projectEntityFromProjectRequestDto(projectRequestDto).getCustomer());
         entity.setProjectName(projectRequestDto.getProjectName());
         entity.setStatus(projectRequestDto.getStatus());
-        ProjectResponseDto projectResponseDto = INSTANCE.projectResponseDtoFromProjectEntity(entity);
+        ProjectResponseDto projectResponseDto = projectMapper.projectResponseDtoFromProjectEntity(entity);
         log.info("project added");
         return  projectResponseDto;
         //return entity;
@@ -78,10 +77,10 @@ public class ProjectServiceImpl implements ProjectService {
                 () -> new NotFoundException(String.format("Project with ID = %d not found", id))
         );
         entity.setProjectName(projectRequestDto.getProjectName());
-        entity.setCustomer(INSTANCE.projectEntityFromProjectRequestDto(projectRequestDto).getCustomer());
+        entity.setCustomer(projectMapper.projectEntityFromProjectRequestDto(projectRequestDto).getCustomer());
         entity.setStatus(projectRequestDto.getStatus());
 
-        ProjectResponseDto projectResponseDto = INSTANCE.projectResponseDtoFromProjectEntity(entity);
+        ProjectResponseDto projectResponseDto = projectMapper.projectResponseDtoFromProjectEntity(entity);
         log.info("project updated");
         return projectResponseDto;
     }
@@ -94,7 +93,7 @@ public class ProjectServiceImpl implements ProjectService {
         );
         entity.setStatus(ProjectStatus.FINISHED);
 
-        ProjectResponseDto projectResponseDto = INSTANCE.projectResponseDtoFromProjectEntity(entity);
+        ProjectResponseDto projectResponseDto = projectMapper.projectResponseDtoFromProjectEntity(entity);
         log.info("changed project's status");
         return projectResponseDto;
     }
@@ -106,7 +105,7 @@ public class ProjectServiceImpl implements ProjectService {
                 () -> new NotFoundException(String.format("Project with ID = %d not found", id))
         );
         projectRepository.delete(entity);
-        ProjectResponseDto projectResponseDto = INSTANCE.projectResponseDtoFromProjectEntity(entity);
+        ProjectResponseDto projectResponseDto = projectMapper.projectResponseDtoFromProjectEntity(entity);
         log.info("project deleted");
         return projectResponseDto;
     }

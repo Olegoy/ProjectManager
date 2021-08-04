@@ -23,25 +23,25 @@ import java.util.List;
 
 @Tag(name = "Задача", description = "CRUD задач")
 @RestController
-@RequestMapping("${project.uri}")
+@RequestMapping("${project.uri}/tasks")
 public class TaskController {
 
-    private TaskService taskService;
+    private final TaskService taskService;
 
     public TaskController(TaskService taskService) {
         this.taskService = taskService;
     }
 
     @Operation(summary = "Получить список задач")
-    @GetMapping("/tasks")
+    @GetMapping("/")
     public ResponseEntity<List<TaskResponseDto>> getAllTasks() {
         List<TaskResponseDto> allTasks = taskService.getAllTask();
         return ResponseEntity.ok().body(allTasks);
     }
 
     @Operation(summary = "Получить количество незавершенных задач на данный релиз")
-    @GetMapping("/tasks/unfinished/release")
-    public ResponseEntity getCountUnfinishedTasksByRelease(Long releaseId) {
+    @GetMapping("/unfinished/release")
+    public ResponseEntity<Long> getCountUnfinishedTasksByRelease(Long releaseId) {
         long count = 0L;
         for (TaskResponseDto taskResponseDto : taskService.unfinishedTasksByRelease(releaseId)) {
             count++;
@@ -52,8 +52,8 @@ public class TaskController {
     }
 
     @Operation(summary = "Получить количество незавершенных задач проекта")
-    @GetMapping("/tasks/unfinished/project")
-    public ResponseEntity getCountUnfinishedTasksByProject(Long projectId) {
+    @GetMapping("/unfinished/project")
+    public ResponseEntity<Long> getCountUnfinishedTasksByProject(Long projectId) {
         long count = 0L;
         for (TaskResponseDto taskResponseDto : taskService.unfinishedTasksByProjectId(projectId)) {
             count++;
@@ -64,14 +64,14 @@ public class TaskController {
     }
 
     @Operation(summary = "Получить задачу по id")
-    @GetMapping("/tasks/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<TaskResponseDto> getTaskById(@PathVariable Long id) {
         TaskResponseDto responseDto = taskService.getById(id);
         return ResponseEntity.ok().body(responseDto);
     }
 
     @Operation(summary = "Добавить задачу")
-    @PostMapping("/tasks")
+    @PostMapping("/")
     public ResponseEntity<TaskResponseDto> addTask(@RequestBody TaskRequestDto requestDto) {
         // добавление в БД
         TaskResponseDto responseDto = taskService.addTask(requestDto);
@@ -80,7 +80,7 @@ public class TaskController {
     }
 
     @Operation(summary = "Обновление задачи")
-    @PutMapping("/tasks/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<TaskResponseDto> updateTask(@PathVariable Long id,
                                                              @RequestBody TaskRequestDto requestDto) throws IOException {
         // обновление сущности в БД
@@ -89,7 +89,7 @@ public class TaskController {
     }
 
     @Operation(summary = "Изменение статуса задачи")
-    @PutMapping("/tasks/{id}/status")
+    @PutMapping("/{id}/status")
     public ResponseEntity<TaskResponseDto> setStatusTask(@PathVariable Long id,
                                                          @RequestBody TaskStatus status) throws IOException {
         // обновление сущности в БД
@@ -98,7 +98,7 @@ public class TaskController {
     }
 
     @Operation(summary = "Установка релиза задачи")
-    @PutMapping("/tasks/{id}/release")
+    @PutMapping("/{id}/release")
     public ResponseEntity<TaskResponseDto> setReleaseTask(@PathVariable Long id,
                                                           @RequestBody Long releaseId) throws IOException {
         // обновление сущности в БД
@@ -107,7 +107,7 @@ public class TaskController {
     }
 
     @Operation(summary = "Установка исполнителя задачи")
-    @PutMapping("/tasks/{id}/executor")
+    @PutMapping("/{id}/executor")
     public ResponseEntity<TaskResponseDto> setExecutorTask(@PathVariable Long id,
                                                            @RequestBody Long userId) throws IOException {
         // обновление сущности в БД
@@ -116,12 +116,15 @@ public class TaskController {
     }
 
     @Operation(summary = "Удаление задачи")
-    @DeleteMapping("/tasks/{id}")
-    public ResponseEntity deleteTask(@PathVariable Long id) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteTask(@PathVariable Long id) {
         // удаление сущности из БД
         TaskResponseDto responseDto = taskService.deleteTask(id);
 
-        return ResponseEntity.ok().build();
+        return new ResponseEntity<>(
+                String.format("Задача с id #%d успешно удалена", id),
+                HttpStatus.OK
+        );
     }
 
     @ExceptionHandler(IOException.class)

@@ -28,6 +28,8 @@ databaseChangeLog:
               - column: { name: priority, type: INT, constraints: { nullable: false }  }
               - column: { name: release_id, type: BIGINT, constraints: { nullable: false, foreignKeyName: fk_task_release, references: release(id) } }
               - column: { name: project_id, type: BIGINT, constraints: { nullable: false, foreignKeyName: fk_task_project, references: project(id) } }
+              - column: { name: date_start, type: TIMESTAMP, constrains: {nullable: false} }
+              - column: { name: date_end, type: TIMESTAMP, constrains: {nullable: false} }
 
   - changeSet:
       id: 000003-create-table-users

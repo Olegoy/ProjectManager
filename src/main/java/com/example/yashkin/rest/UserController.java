@@ -23,17 +23,17 @@ import java.util.List;
 
 @Tag(name = "Пользователи", description = "CRUD Пользователей")
 @RestController
-@RequestMapping("${project.uri}")
+@RequestMapping("${project.uri}/users")
 public class UserController {
 
-    private UserService userService;
+    private final UserService userService;
 
     public UserController(UserService userService) {
         this.userService = userService;
     }
 
     @Operation(summary = "Получить список пользователей")
-    @GetMapping("/users")
+    @GetMapping("/")
     public ResponseEntity<List<UserResponseDto>> getUsers() {
         UserResponseDto user = new UserResponseDto("firstName1", "secondName1");
         UserResponseDto user2 = new UserResponseDto("firstName2", "secondName2");
@@ -45,14 +45,14 @@ public class UserController {
     }
 
         @Operation(summary = "Получить пользователя по id")
-    @GetMapping("/users/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<UserResponseDto> getUserById(@PathVariable Long id) {
         UserResponseDto responseDto = userService.getById(id);
         return ResponseEntity.ok().body(responseDto);
     }
 
     @Operation(summary = "Добавить пользователя")
-    @PostMapping("/users")
+    @PostMapping("/")
     public ResponseEntity<UserResponseDto> addUser(@RequestBody UserRequestDto requestDto) {
         // добавление в БД
         UserResponseDto responseDto = userService.addUser(requestDto);
@@ -61,7 +61,7 @@ public class UserController {
     }
 
     @Operation(summary = "Обновление пользователя")
-    @PutMapping("/users/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<UserResponseDto> updateUser(@PathVariable Long id,
                                                              @RequestBody UserRequestDto requestDto) throws IOException {
         // обновление сущности в БД
@@ -71,12 +71,15 @@ public class UserController {
     }
 
     @Operation(summary = "Удаление пользователя")
-    @DeleteMapping("/users/{id}")
-    public ResponseEntity deleteUser(@PathVariable Long id) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteUser(@PathVariable Long id) {
         // удаление сущности из БД
         UserResponseDto responseDto = userService.deleteUser(id);
 
-        return ResponseEntity.ok().build();
+        return new ResponseEntity<>(
+                String.format("Пользователь с id #%d успешно удален", id),
+                HttpStatus.OK
+        );
     }
 
     @ExceptionHandler(IOException.class)
