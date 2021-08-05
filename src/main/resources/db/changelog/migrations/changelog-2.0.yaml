@@ -11,3 +11,4 @@ databaseChangeLog:
                   name: date_start
               - column:
                   name: date_end
+

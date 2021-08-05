@@ -1,7 +1,5 @@
 package com.example.yashkin.service;
 
-import com.example.yashkin.entity.ReleaseEntity;
-import com.example.yashkin.entity.TaskEntity;
 import com.example.yashkin.model.TaskStatus;
 import com.example.yashkin.rest.dto.TaskRequestDto;
 import com.example.yashkin.rest.dto.TaskResponseDto;
