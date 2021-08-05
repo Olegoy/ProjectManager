@@ -29,6 +29,12 @@ public class UserResponseDto {
         this.lastName = lastName;
     }
 
+    public UserResponseDto(String firstName, String lastName, String role) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.role = role;
+    }
+
     public Long getId() {
         return id;
     }
