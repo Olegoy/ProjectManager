@@ -23,17 +23,17 @@ import java.util.List;
 
 @Tag(name = "Релиз", description = "CRUD Релиза")
 @RestController
-@RequestMapping("${project.uri}")
+@RequestMapping("${project.uri}/releases")
 public class ReleaseController {
 
-    private ReleaseService releaseService;
+    private final ReleaseService releaseService;
 
     public ReleaseController(ReleaseService releaseService) {
         this.releaseService = releaseService;
     }
 
     @Operation(summary = "Получить список релизов")
-    @GetMapping("/releases")
+    @GetMapping("/")
     public ResponseEntity<List<ReleaseResponseDto>> getReleases() {
         ReleaseResponseDto release = new ReleaseResponseDto(1);
         ReleaseResponseDto release2 = new ReleaseResponseDto(2);
@@ -45,14 +45,14 @@ public class ReleaseController {
     }
 
     @Operation(summary = "Получить релиз по id")
-    @GetMapping("/releases/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<ReleaseResponseDto> getReleaseById(@PathVariable Long id) {
         ReleaseResponseDto responseDto = releaseService.getById(id);
         return ResponseEntity.ok().body(responseDto);
     }
 
     @Operation(summary = "Добавить релиз")
-    @PostMapping("/releases/")
+    @PostMapping("/")
     public ResponseEntity<ReleaseResponseDto> addRelease(@RequestBody ReleaseRequestDto requestDto) {
         // добавление в БД
         ReleaseResponseDto responseDto = releaseService.addRelease(requestDto);
@@ -61,7 +61,7 @@ public class ReleaseController {
     }
 
     @Operation(summary = "Обновление релиза")
-    @PutMapping("/releases/{id}")
+    @PutMapping("/{id}")
     public ResponseEntity<ReleaseResponseDto> updateRelease(@PathVariable Long id,
                                                              @RequestBody ReleaseRequestDto requestDto) throws IOException {
         // обновление сущности в БД
@@ -71,12 +71,15 @@ public class ReleaseController {
     }
 
     @Operation(summary = "Удаление релиза")
-    @DeleteMapping("/releases/{id}")
-    public ResponseEntity deleteRelease(@PathVariable Long id) {
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteRelease(@PathVariable Long id) {
         // удаление сущности из БД
         ReleaseResponseDto responseDto = releaseService.deleteRelease(id);
 
-        return ResponseEntity.ok().build();
+        return new ResponseEntity<>(
+                String.format("Релиз с id #%d успешно удален", id),
+                HttpStatus.OK
+        );
     }
 
     @ExceptionHandler(IOException.class)

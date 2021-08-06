@@ -7,19 +7,24 @@ import com.example.yashkin.repository.ReleaseRepository;
 import com.example.yashkin.rest.dto.ReleaseRequestDto;
 import com.example.yashkin.rest.dto.ReleaseResponseDto;
 import com.example.yashkin.service.ReleaseService;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Service
 public class ReleaseServiceImpl implements ReleaseService {
 
+    private static Logger log = LoggerFactory.getLogger(ReleaseServiceImpl.class);
+
     private ReleaseRepository releaseRepository;
+    private ReleaseMapper releaseMapper;
 
-    private ReleaseMapper INSTANCE;
-
-    public ReleaseServiceImpl(ReleaseRepository releaseRepository, ReleaseMapper INSTANCE) {
+    public ReleaseServiceImpl(ReleaseRepository releaseRepository, @Qualifier("releaseMapperImpl") ReleaseMapper INSTANCE) {
         this.releaseRepository = releaseRepository;
-        this.INSTANCE = INSTANCE;
+        this.releaseMapper = INSTANCE;
     }
 
     @Transactional
@@ -30,8 +35,8 @@ public class ReleaseServiceImpl implements ReleaseService {
                 () -> new NotFoundException(String.format("Release with ID = %d not found", id))
         );
 
-        ReleaseResponseDto responseDto = INSTANCE.releaseResponseDtoFromReleaseEntity(releaseEntity);
-
+        ReleaseResponseDto responseDto = releaseMapper.releaseResponseDtoFromReleaseEntity(releaseEntity);
+        log.info("release got by id");
         return responseDto;
 
     }
@@ -40,10 +45,11 @@ public class ReleaseServiceImpl implements ReleaseService {
     @Override
     public ReleaseResponseDto addRelease(ReleaseRequestDto releaseRequestDto) {
 
-        ReleaseEntity entity = INSTANCE.releaseEntityFromReleaseRequestDto(releaseRequestDto);
+        ReleaseEntity entity = releaseMapper.releaseEntityFromReleaseRequestDto(releaseRequestDto);
         releaseRepository.save(entity);
 
-        ReleaseResponseDto responseDto = INSTANCE.releaseResponseDtoFromReleaseEntity(entity);
+        ReleaseResponseDto responseDto = releaseMapper.releaseResponseDtoFromReleaseEntity(entity);
+        log.info("release added");
         return  responseDto;
 
     }
@@ -57,7 +63,8 @@ public class ReleaseServiceImpl implements ReleaseService {
         entity.setVersion(releaseRequestDto.getVersion());
         entity.setDateStart(releaseRequestDto.getDateStart());
         entity.setDateEnd(releaseRequestDto.getDateEnd());
-        ReleaseResponseDto responseDto = INSTANCE.releaseResponseDtoFromReleaseEntity(entity);
+        ReleaseResponseDto responseDto = releaseMapper.releaseResponseDtoFromReleaseEntity(entity);
+        log.info("release updated");
         return responseDto;
     }
 
@@ -68,7 +75,8 @@ public class ReleaseServiceImpl implements ReleaseService {
                 () -> new NotFoundException(String.format("Release with ID = %d not found", id))
         );
         releaseRepository.delete(entity);
-        ReleaseResponseDto responseDto = INSTANCE.releaseResponseDtoFromReleaseEntity(entity);
+        ReleaseResponseDto responseDto = releaseMapper.releaseResponseDtoFromReleaseEntity(entity);
+        log.info("release deleted");
         return responseDto;
     }
 }

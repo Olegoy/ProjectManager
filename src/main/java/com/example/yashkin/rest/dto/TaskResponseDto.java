@@ -8,8 +8,8 @@ import java.time.LocalDateTime;
 @Schema(description = "Задача")
 public class TaskResponseDto {
 
-    @Schema(description = "ID проекта")
-    private Long projectId;
+    @Schema(description = "Проект, к которому относится задача")
+    private ProjectResponseDto project;
 
     @Schema(description = "ID задачи")
     private Long id;
@@ -18,10 +18,10 @@ public class TaskResponseDto {
     private String name;
 
     @Schema(description = "Автор задачи")
-    private String author;
+    private UserResponseDto author;
 
     @Schema(description = "Исполнитель задачи")
-    private String executor;
+    private UserResponseDto executor;
 
     @Schema(description = "Тип задачи")
     private String type;
@@ -32,14 +32,9 @@ public class TaskResponseDto {
     @Schema(description = "Приоритет задачи")
     private Long priority;
 
-    @Schema(description = "Версия")
-    private Integer version;
+    @Schema(description = "Релиз")
+    private ReleaseResponseDto release;
 
-    @Schema(description = "Дата начала задачи")
-    private LocalDateTime dateStart;
-
-    @Schema(description = "Дата завершения задачи")
-    private LocalDateTime dateEnd;
 
     public TaskResponseDto() {
     }
@@ -48,9 +43,29 @@ public class TaskResponseDto {
         this.id = id;
     }
 
-    public TaskResponseDto(String name, String author) {
+    public TaskResponseDto(String name, UserResponseDto author) {
         this.name = name;
         this.author = author;
+    }
+
+    public TaskResponseDto(ProjectResponseDto project, Long id, String name, UserResponseDto author, UserResponseDto executor, String type, TaskStatus status, Long priority, ReleaseResponseDto release) {
+        this.project = project;
+        this.id = id;
+        this.name = name;
+        this.author = author;
+        this.executor = executor;
+        this.type = type;
+        this.status = status;
+        this.priority = priority;
+        this.release = release;
+    }
+
+    public ProjectResponseDto getProject() {
+        return project;
+    }
+
+    public void setProject(ProjectResponseDto project) {
+        this.project = project;
     }
 
     public Long getId() {
@@ -61,14 +76,6 @@ public class TaskResponseDto {
         this.id = id;
     }
 
-    public Long getProjectId() {
-        return projectId;
-    }
-
-    public void setProjectId(Long projectId) {
-        this.projectId = projectId;
-    }
-
     public String getName() {
         return name;
     }
@@ -77,19 +84,19 @@ public class TaskResponseDto {
         this.name = name;
     }
 
-    public String getAuthor() {
+    public UserResponseDto getAuthor() {
         return author;
     }
 
-    public void setAuthor(String author) {
+    public void setAuthor(UserResponseDto author) {
         this.author = author;
     }
 
-    public String getExecutor() {
+    public UserResponseDto getExecutor() {
         return executor;
     }
 
-    public void setExecutor(String executor) {
+    public void setExecutor(UserResponseDto executor) {
         this.executor = executor;
     }
 
@@ -117,27 +124,11 @@ public class TaskResponseDto {
         this.priority = priority;
     }
 
-    public Integer getVersion() {
-        return version;
+    public ReleaseResponseDto getRelease() {
+        return release;
     }
 
-    public void setVersion(Integer version) {
-        this.version = version;
-    }
-
-    public LocalDateTime getDateStart() {
-        return dateStart;
-    }
-
-    public void setDateStart(LocalDateTime dateStart) {
-        this.dateStart = dateStart;
-    }
-
-    public LocalDateTime getDateEnd() {
-        return dateEnd;
-    }
-
-    public void setDateEnd(LocalDateTime dateEnd) {
-        this.dateEnd = dateEnd;
+    public void setRelease(ReleaseResponseDto release) {
+        this.release = release;
     }
 }

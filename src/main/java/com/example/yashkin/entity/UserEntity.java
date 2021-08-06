@@ -3,13 +3,9 @@ package com.example.yashkin.entity;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.util.Set;
@@ -25,22 +21,20 @@ public class UserEntity {
     @Column(name = "first_name")
     private String firstName;
 
-
     @Column(name = "last_name")
     private String lastName;
 
     @Column(name = "role")
     private String role;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "userCustomer")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "customer")
     private Set<ProjectEntity> projects;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinTable(name = "person_companies",
-            joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "company_id")
-    )
-    private Set<TaskEntity> tasks;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "author")
+    private Set<TaskEntity> tasksAsAuthor;
+
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "executor")
+    private Set<TaskEntity> tasksAsExecutor;
 
     public UserEntity() {
     }

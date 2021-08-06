@@ -10,7 +10,7 @@ public class ProjectResponseDto {
     private String name;
 
     @Schema(description = "Заказчик проекта")
-    private String customer;
+    private UserResponseDto customer;
 
     @Schema(description = "ID проекта")
     private Long id;
@@ -25,9 +25,11 @@ public class ProjectResponseDto {
         this.id = id;
     }
 
-    public ProjectResponseDto(String name, String customer) {
+    public ProjectResponseDto(String name, UserResponseDto customer, Long id, ProjectStatus status) {
         this.name = name;
         this.customer = customer;
+        this.id = id;
+        this.status = status;
     }
 
     public String getName() {
@@ -38,11 +40,11 @@ public class ProjectResponseDto {
         this.name = name;
     }
 
-    public String getCustomer() {
+    public UserResponseDto getCustomer() {
         return customer;
     }
 
-    public void setCustomer(String customer) {
+    public void setCustomer(UserResponseDto customer) {
         this.customer = customer;
     }
 

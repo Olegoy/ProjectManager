@@ -1,6 +1,30 @@
 databaseChangeLog:
 
   - changeSet:
+      id: 000003-create-table-users
+      author: Oleg Yashkin
+      changes:
+        - createTable:
+            tableName: users
+            columns:
+              - column: { name: id, type: BIGINT, autoIncrement: true, constraints: { primaryKey: true } }
+              - column: { name: first_name, type: VARCHAR(255), constraints: { nullable: false } }
+              - column: { name: last_name, type: VARCHAR(255), constraints: { nullable: false } }
+              - column: { name: role, type: VARCHAR(255), constraints: { nullable: false } }
+
+  - changeSet:
+      id: 000004-create-table-release
+      author: Oleg Yashkin
+      changes:
+        - createTable:
+            tableName: release
+            columns:
+              - column: { name: id, type: BIGINT, autoIncrement: true, constraints: { primaryKey: true } }
+              - column: { name: version, type: INT, constraints: { nullable: false, unique: false } }
+              - column: { name: date_start, type: TIMESTAMP, constraints: { nullable: false } }
+              - column: { name: date_end, type: TIMESTAMP, constraints: { nullable: false } }
+
+  - changeSet:
       id: 000001-create-table-project
       author: Oleg Yashkin
       changes:
@@ -27,30 +51,7 @@ databaseChangeLog:
               - column: { name: status, type: VARCHAR(255), constraints: { nullable: false } }
               - column: { name: priority, type: INT, constraints: { nullable: false }  }
               - column: { name: release_id, type: BIGINT, constraints: { nullable: false, foreignKeyName: fk_task_release, references: release(id) } }
-              - column: { name: date_start, type: TIMESTAMP, constrains: {nullable: false} }
-              - column: { name: date_end, type: TIMESTAMP, constrains: {nullable: false} }
               - column: { name: project_id, type: BIGINT, constraints: { nullable: false, foreignKeyName: fk_task_project, references: project(id) } }
+              - column: { name: date_start, type: TIMESTAMP, constraints: {nullable: false} }
+              - column: { name: date_end, type: TIMESTAMP, constraints: {nullable: false} }
 
-  - changeSet:
-      id: 000003-create-table-users
-      author: Oleg Yashkin
-      changes:
-        - createTable:
-            tableName: users
-            columns:
-              - column: { name: id, type: BIGINT, autoIncrement: true, constrains: { primaryKey: true } }
-              - column: { name: first_name, type: VARCHAR(255), constraints: { nullable: false } }
-              - column: { name: last_name, type: VARCHAR(255), constraints: { nullable: false } }
-              - column: { name: role, type: VARCHAR(255), constraints: { nullable: false } }
-
-  - changeSet:
-      id: 000004-create-table-release
-      author: Oleg Yashkin
-      changes:
-        - createTable:
-            tableName: release
-            columns:
-              - column: { name: id, type: BIGINT, autoIncrement: true, constrains: { primaryKey: true } }
-              - column: { name: version, type: INT, constrains: { nullable: false, unique: false } }
-              - column: { name: date_start, type: TIMESTAMP, constrains: {nullable: false} }
-              - column: { name: date_end, type: TIMESTAMP, constrains: {nullable: false} }

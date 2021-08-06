@@ -1,0 +1,14 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: dropColumn-date-from-task
+      author: Oleg Yashkin
+      changes:
+        - dropColumn:
+            tableName: task
+            columns:
+              - column:
+                  name: date_start
+              - column:
+                  name: date_end
+
