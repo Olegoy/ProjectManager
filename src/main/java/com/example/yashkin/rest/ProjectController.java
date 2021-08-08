@@ -91,7 +91,7 @@ public class ProjectController {
         long count = taskService.unfinishedTasksByProjectId(id).stream().count();
         boolean projectIsFinished = count < 1;
         if (projectIsFinished) {
-            projectService.setFinishedStatusProject(id);
+            ProjectResponseDto projectResponseDto = projectService.setFinishedStatusProject(id);
             responseEntity = new ResponseEntity<>(
                     String.format("Проект с id #%d был успешно завершен", id),
                     HttpStatus.OK
