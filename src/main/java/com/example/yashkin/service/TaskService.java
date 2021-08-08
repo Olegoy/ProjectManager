@@ -41,6 +41,11 @@ public interface TaskService {
      */
     TaskResponseDto deleteTask(Long id);
 
+    /**
+     * Method for getting unfinished tasks by release
+     * @param releaseId Long
+     * @return List<TaskResponseDto>
+     */
     List<TaskResponseDto> unfinishedTasksByRelease(Long releaseId);
 
     /**
@@ -49,11 +54,34 @@ public interface TaskService {
      */
     List<TaskResponseDto> getAllTask();
 
+    /**
+     * Method for getting unfinished tasks by project's ID
+     * @param projectId Long
+     * @return List<TaskResponseDto>
+     */
     List<TaskResponseDto> unfinishedTasksByProjectId(Long projectId);
 
+    /**
+     * Method for setting a status to the task
+     * @param id Long
+     * @param status TaskStatus
+     * @return TaskResponseDto
+     */
     TaskResponseDto setStatusTask(Long id, TaskStatus status);
 
+    /**
+     * Method for setting a release to the task
+     * @param id Long
+     * @param releaseId Long
+     * @return TaskResponseDto
+     */
     TaskResponseDto setReleaseTask(Long id, Long releaseId);
 
+    /**
+     * Method for setting an executor to the task
+     * @param id Long
+     * @param userId Long
+     * @return TaskResponseDto
+     */
     TaskResponseDto setExecutorTask(Long id, Long userId);
 }
