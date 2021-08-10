@@ -12,3 +12,26 @@ databaseChangeLog:
               - column:
                   name: date_end
 
+  - changeSet:
+      id: addColumn-login-to-user
+      author: Oleg Yashkin
+      changes:
+        - addColumn:
+            tableName: users
+            columns:
+              - column:
+                  name: login
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+
+  - changeSet:
+      id: create-table-role
+      author: Oleg Yashkin
+      changes:
+        - createTable:
+            tableName: role
+            columns:
+              - column: { name: user_id, type: BIGINT, constraints: { nullable: false, foreignKeyName: fk_user_role, references: users(id) } }
+              - column: { name: roles, type: VARCHAR(255) }

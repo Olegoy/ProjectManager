@@ -1,6 +1,9 @@
 package com.example.yashkin.rest.dto;
 
+import com.example.yashkin.model.Role;
 import io.swagger.v3.oas.annotations.media.Schema;
+
+import java.util.Set;
 
 @Schema(description = "Пользователь")
 public class UserRequestDto {
@@ -11,18 +14,23 @@ public class UserRequestDto {
     @Schema(description = "Фамилия пользователя")
     private String lastName;
 
-    @Schema(description = "Роль пользователя")
-    private String role;
+    @Schema(description = "Login пользователя")
+    private String login;
 
-    public UserRequestDto(String firstName, String lastName) {
+    @Schema(description = "Роли пользователя")
+    private Set<Role> roles;
+
+    public UserRequestDto(String firstName, String lastName, String login) {
         this.firstName = firstName;
         this.lastName = lastName;
+        this.login = login;
     }
 
-    public UserRequestDto(String firstName, String lastName, String role) {
+    public UserRequestDto(String firstName, String lastName, String login, Set<Role> roles) {
         this.firstName = firstName;
         this.lastName = lastName;
-        this.role = role;
+        this.login = login;
+        this.roles = roles;
     }
 
     public String getFirstName() {
@@ -41,11 +49,19 @@ public class UserRequestDto {
         this.lastName = lastName;
     }
 
-    public String getRole() {
-        return role;
+    public String getLogin() {
+        return login;
     }
 
-    public void setRole(String role) {
-        this.role = role;
+    public void setLogin(String login) {
+        this.login = login;
+    }
+
+    public Set<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
     }
 }

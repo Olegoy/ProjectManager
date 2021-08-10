@@ -8,6 +8,9 @@ import com.example.yashkin.rest.dto.UserRequestDto;
 import com.example.yashkin.rest.dto.UserResponseDto;
 import com.example.yashkin.service.UserService;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,12 +18,24 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Service
-public class UserServiceImpl implements UserService {
+public class UserServiceImpl implements UserService, UserDetailsService {
 
     private static Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
 
     private UserRepository userRepository;
     private UserMapper userMapper;
+
+    @Transactional
+    @Override
+    public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
+        return userRepository.getUserByLogin(login).orElseThrow(() -> {
+            UsernameNotFoundException exception = new UsernameNotFoundException(
+                    String.format("Пользователь с логином #%s не существует", login)
+            );
+            log.error(exception.getMessage(), exception);
+            throw exception;
+        });
+    }
 
     public UserServiceImpl(UserRepository userRepository, @Qualifier("userMapperImpl") UserMapper INSTANCE) {
         this.userRepository = userRepository;
@@ -62,7 +77,8 @@ public class UserServiceImpl implements UserService {
         );
         entity.setFirstName(userRequestDto.getFirstName());
         entity.setLastName(userRequestDto.getLastName());
-        entity.setRole(userRequestDto.getRole());
+        entity.setLogin(userRequestDto.getLogin());
+        entity.setRoles(userRequestDto.getRoles());
         UserResponseDto responseDto = userMapper.userResponseDtoFromUserEntity(entity);
         log.info("user updated");
         return responseDto;
