@@ -35,6 +35,7 @@ public class UserController {
 
     @Operation(summary = "Получить список пользователей")
     @GetMapping("/")
+    @PreAuthorize("hasAuthority('users:read')")
     public ResponseEntity<List<UserResponseDto>> getUsers() {
         UserResponseDto user = new UserResponseDto("firstName1", "secondName1");
         UserResponseDto user2 = new UserResponseDto("firstName2", "secondName2");

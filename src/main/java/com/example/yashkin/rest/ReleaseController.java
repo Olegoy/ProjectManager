@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,6 +35,7 @@ public class ReleaseController {
 
     @Operation(summary = "Получить список релизов")
     @GetMapping("/")
+    @PreAuthorize("hasAuthority('users:read')")
     public ResponseEntity<List<ReleaseResponseDto>> getReleases() {
         ReleaseResponseDto release = new ReleaseResponseDto(1);
         ReleaseResponseDto release2 = new ReleaseResponseDto(2);
@@ -46,6 +48,7 @@ public class ReleaseController {
 
     @Operation(summary = "Получить релиз по id")
     @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('users:read')")
     public ResponseEntity<ReleaseResponseDto> getReleaseById(@PathVariable Long id) {
         ReleaseResponseDto responseDto = releaseService.getById(id);
         return ResponseEntity.ok().body(responseDto);
@@ -53,6 +56,7 @@ public class ReleaseController {
 
     @Operation(summary = "Добавить релиз")
     @PostMapping("/")
+    @PreAuthorize("hasAuthority('users:write')")
     public ResponseEntity<ReleaseResponseDto> addRelease(@RequestBody ReleaseRequestDto requestDto) {
         // добавление в БД
         ReleaseResponseDto responseDto = releaseService.addRelease(requestDto);
@@ -62,6 +66,7 @@ public class ReleaseController {
 
     @Operation(summary = "Обновление релиза")
     @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('users:write')")
     public ResponseEntity<ReleaseResponseDto> updateRelease(@PathVariable Long id,
                                                              @RequestBody ReleaseRequestDto requestDto) throws IOException {
         // обновление сущности в БД
@@ -72,6 +77,7 @@ public class ReleaseController {
 
     @Operation(summary = "Удаление релиза")
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('users:write')")
     public ResponseEntity<String> deleteRelease(@PathVariable Long id) {
         // удаление сущности из БД
         ReleaseResponseDto responseDto = releaseService.deleteRelease(id);

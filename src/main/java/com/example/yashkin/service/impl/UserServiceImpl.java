@@ -37,9 +37,9 @@ public class UserServiceImpl implements UserService, UserDetailsService {
         });
     }
 
-    public UserServiceImpl(UserRepository userRepository, @Qualifier("userMapperImpl") UserMapper INSTANCE) {
+    public UserServiceImpl(UserRepository userRepository, @Qualifier("userMapperImpl") UserMapper userMapper) {
         this.userRepository = userRepository;
-        this.userMapper = INSTANCE;
+        this.userMapper = userMapper;
     }
 
     @Transactional

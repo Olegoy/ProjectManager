@@ -3,6 +3,7 @@ package com.example.yashkin.service;
 import com.example.yashkin.model.TaskStatus;
 import com.example.yashkin.rest.dto.TaskRequestDto;
 import com.example.yashkin.rest.dto.TaskResponseDto;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -11,6 +12,27 @@ import java.util.List;
  * @author Oleg Yaskin
  */
 public interface TaskService {
+
+    /**
+     * Method for getting a task from the database by filter
+     * @param name String
+     * @param type String
+     * @param status TaskStatus
+     * @param projectName String
+     * @param releaseVersion String
+     * @param authorName String
+     * @param executorName String
+     * @return List<TaskResponseDto>
+     */
+    public List<TaskResponseDto> findTasksByFilter(
+            String name,
+            String type,
+            TaskStatus status,
+            String projectName,
+            String releaseVersion,
+            String authorName,
+            String executorName
+    );
 
     /**
      * Method for getting a task from the database by ID
@@ -25,6 +47,13 @@ public interface TaskService {
      * @return TaskResponseDto
      */
     TaskResponseDto addTask(TaskRequestDto taskRequestDto);
+
+    /**
+     *  Method for creating a task from CSV file
+     * @param multipartFile MultipartFile
+     * @return TaskResponseDto
+     */
+    TaskResponseDto createFromFile(MultipartFile multipartFile);
 
     /**
      * Method for updating the task
