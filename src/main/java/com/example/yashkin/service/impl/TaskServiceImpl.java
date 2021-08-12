@@ -39,31 +39,19 @@ public class TaskServiceImpl implements TaskService {
 
     private final TaskMapper taskMapper;
 
-    public TaskServiceImpl(TaskRepository taskRepository, UserRepository userRepository, ReleaseRepository releaseRepository, @Qualifier("taskMapperImpl") TaskMapper INSTANCE) {
+    public TaskServiceImpl(TaskRepository taskRepository, UserRepository userRepository, ReleaseRepository releaseRepository, @Qualifier("taskMapperImpl") TaskMapper taskMapper) {
         this.taskRepository = taskRepository;
         this.userRepository = userRepository;
         this.releaseRepository = releaseRepository;
-        this.taskMapper = INSTANCE;
+        this.taskMapper = taskMapper;
     }
 
     @Transactional
     @Override
-    public List<TaskResponseDto> findTasksByFilter(
-            String name,
-            String type,
-            TaskStatus status,
-            String projectName,
-            String releaseVersion,
-            String authorName,
-            String executorName
-    ) {
-
-        log.info("Поиск задачи по фильтру: Название задачи:{}, Тип задачи: {}, Статус задачи: {}, " +
-                        "Название проекта: {}, Версия релиза: {}, Имя автора задачи: {}, Имя исполнителя Задачи: {} ",
-                name, type, status, projectName, releaseVersion, authorName, executorName);
+    public List<TaskResponseDto> findTasksByFilter(String name, String type, TaskStatus status, String projectName, String releaseVersion, String authorName, String executorName) {
+        log.info("Поиск задачи по фильтру: Название задачи:{}, Тип задачи: {}, Статус задачи: {}, " + "Название проекта: {}, Версия релиза: {}, Имя автора задачи: {}, Имя исполнителя Задачи: {} ", name, type, status, projectName, releaseVersion, authorName, executorName);
 
         List<TaskEntity> filteredTasks = taskRepository.findAll((root, query, cb) -> {
-
             List<Predicate> predicates = new ArrayList<>();
 
             if (name != null && !name.isEmpty()) {
@@ -122,10 +110,8 @@ public class TaskServiceImpl implements TaskService {
     @Transactional
     @Override
     public TaskResponseDto addTask(TaskRequestDto taskRequestDto) {
-
         TaskEntity entity = taskMapper.taskEntityFromTaskRequestDto(taskRequestDto);
         taskRepository.save(entity);
-
         TaskResponseDto responseDto = taskMapper.taskResponseDtoFromTaskEntity(entity);
         log.info("task added");
         return responseDto;
@@ -148,7 +134,6 @@ public class TaskServiceImpl implements TaskService {
         TaskResponseDto responseDto = taskMapper.taskResponseDtoFromTaskEntity(entity);
         log.info("task updated");
         return responseDto;
-
     }
 
     @Transactional
@@ -228,8 +213,9 @@ public class TaskServiceImpl implements TaskService {
         return responseDto;
     }
 
+    @Transactional
     @Override
-    public TaskResponseDto createFromFile(MultipartFile multipartFile) {
+    public TaskResponseDto createFromFile(MultipartFile multipartFile) throws IOException {
         TaskResponseDto taskResponseDto = new TaskResponseDto();
         try {
             Path tempFile = Files.createTempFile(null, "tmp");
@@ -248,7 +234,7 @@ public class TaskServiceImpl implements TaskService {
             }
         } catch (IOException e) {
             log.error("The task did not create!");
-            e.printStackTrace();
+            throw new IOException();
         }
         return taskResponseDto;
     }

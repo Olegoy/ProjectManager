@@ -105,7 +105,7 @@ public class TaskController {
     @Operation(summary = "Создать задачу из файла CSV")
     @PostMapping("/scv/")
     @PreAuthorize("hasAuthority('users:write')")
-    public ResponseEntity<TaskResponseDto> createTaskFromCsv(@RequestParam("file") MultipartFile file) {
+    public ResponseEntity<TaskResponseDto> createTaskFromCsv(@RequestParam("file") MultipartFile file) throws IOException {
         TaskResponseDto responseDto = taskService.createFromFile(file);
         return ResponseEntity.ok().body(responseDto);
     }

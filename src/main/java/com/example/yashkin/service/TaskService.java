@@ -5,6 +5,7 @@ import com.example.yashkin.rest.dto.TaskRequestDto;
 import com.example.yashkin.rest.dto.TaskResponseDto;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -53,7 +54,7 @@ public interface TaskService {
      * @param multipartFile MultipartFile
      * @return TaskResponseDto
      */
-    TaskResponseDto createFromFile(MultipartFile multipartFile);
+    TaskResponseDto createFromFile(MultipartFile multipartFile) throws IOException;
 
     /**
      * Method for updating the task
