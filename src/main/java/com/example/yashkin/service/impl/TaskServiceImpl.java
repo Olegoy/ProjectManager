@@ -9,16 +9,24 @@ import com.example.yashkin.repository.TaskRepository;
 import com.example.yashkin.repository.UserRepository;
 import com.example.yashkin.rest.dto.TaskRequestDto;
 import com.example.yashkin.rest.dto.TaskResponseDto;
+
 import com.example.yashkin.service.TaskService;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVRecord;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.persistence.criteria.Predicate;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 @Service
 public class TaskServiceImpl implements TaskService {
@@ -31,11 +39,59 @@ public class TaskServiceImpl implements TaskService {
 
     private final TaskMapper taskMapper;
 
-    public TaskServiceImpl(TaskRepository taskRepository, UserRepository userRepository, ReleaseRepository releaseRepository, @Qualifier("taskMapperImpl") TaskMapper INSTANCE) {
+    public TaskServiceImpl(TaskRepository taskRepository, UserRepository userRepository, ReleaseRepository releaseRepository, @Qualifier("taskMapperImpl") TaskMapper taskMapper) {
         this.taskRepository = taskRepository;
         this.userRepository = userRepository;
         this.releaseRepository = releaseRepository;
-        this.taskMapper = INSTANCE;
+        this.taskMapper = taskMapper;
+    }
+
+    @Transactional
+    @Override
+    public List<TaskResponseDto> findTasksByFilter(String name, String type, TaskStatus status, String projectName, String releaseVersion, String authorName, String executorName) {
+        log.info("Поиск задачи по фильтру: Название задачи:{}, Тип задачи: {}, Статус задачи: {}, " + "Название проекта: {}, Версия релиза: {}, Имя автора задачи: {}, Имя исполнителя Задачи: {} ", name, type, status, projectName, releaseVersion, authorName, executorName);
+
+        List<TaskEntity> filteredTasks = taskRepository.findAll((root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+
+            if (name != null && !name.isEmpty()) {
+                predicates.add(cb.like(root.get("name"), "%" + name + "%"));
+            }
+
+            if (type != null && !type.isEmpty()) {
+                predicates.add(cb.like(root.get("type"), "%" + type + "%"));
+            }
+
+            if (status != null) {
+                predicates.add(cb.equal(root.get("status"), status));
+            }
+
+            if (projectName != null && !projectName.isEmpty()) {
+                predicates.add(cb.like(root.join("project").get("name"), "%" + projectName + "%"));
+            }
+
+            if (releaseVersion != null && !releaseVersion.isEmpty()) {
+                predicates.add(cb.equal(root.join("release").get("version"), releaseVersion));
+            }
+
+            if (authorName != null && !authorName.isEmpty()) {
+                predicates.add(cb.like(root.join("author").get("name"), "%" + authorName + "%"));
+            }
+
+            if (executorName != null && !executorName.isEmpty()) {
+                predicates.add(cb.like(root.join("executor").get("name"), "%" + executorName + "%"));
+            }
+
+            return query
+                    .where(predicates.toArray(new Predicate[predicates.size()]))
+                    .orderBy(cb.asc(root.get("name")))
+                    .getRestriction();
+        });
+
+        return filteredTasks.stream()
+              .map(taskMapper::taskResponseDtoFromTaskEntity)
+              .collect(Collectors.toList());
+
     }
 
     @Transactional
@@ -54,10 +110,8 @@ public class TaskServiceImpl implements TaskService {
     @Transactional
     @Override
     public TaskResponseDto addTask(TaskRequestDto taskRequestDto) {
-
         TaskEntity entity = taskMapper.taskEntityFromTaskRequestDto(taskRequestDto);
         taskRepository.save(entity);
-
         TaskResponseDto responseDto = taskMapper.taskResponseDtoFromTaskEntity(entity);
         log.info("task added");
         return responseDto;
@@ -80,7 +134,6 @@ public class TaskServiceImpl implements TaskService {
         TaskResponseDto responseDto = taskMapper.taskResponseDtoFromTaskEntity(entity);
         log.info("task updated");
         return responseDto;
-
     }
 
     @Transactional
@@ -158,6 +211,32 @@ public class TaskServiceImpl implements TaskService {
         TaskResponseDto responseDto = taskMapper.taskResponseDtoFromTaskEntity(entity);
         log.info("changed task's release");
         return responseDto;
+    }
+
+    @Transactional
+    @Override
+    public TaskResponseDto createFromFile(MultipartFile multipartFile) throws IOException {
+        TaskResponseDto taskResponseDto = new TaskResponseDto();
+        try {
+            Path tempFile = Files.createTempFile(null, "tmp");
+            multipartFile.transferTo(tempFile);
+            Iterable<CSVRecord> records = CSVFormat.DEFAULT.parse(Files.newBufferedReader(tempFile));
+            for(CSVRecord record: records) {
+                TaskEntity taskEntity = new TaskEntity();
+                taskEntity.setName(record.get("Name"));
+                taskEntity.setType(record.get("Type"));
+                taskEntity.setPriority(Integer.parseInt(record.get("Priority")));
+                taskEntity.setAuthor(userRepository.getById(Long.parseLong(record.get("Author"))));
+                taskEntity.setExecutor(userRepository.getById(Long.parseLong(record.get("Executor"))));
+                taskResponseDto = taskMapper.taskResponseDtoFromTaskEntity(taskEntity);
+                taskRepository.save(taskEntity);
+                log.info("task added");
+            }
+        } catch (IOException e) {
+            log.error("The task did not create!");
+            throw new IOException();
+        }
+        return taskResponseDto;
     }
 
     @Transactional

@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,6 +37,7 @@ public class ProjectController {
 
     @Operation(summary = "Получить список проектов")
     @GetMapping("/")
+    @PreAuthorize("hasAuthority('users:read')")
     public ResponseEntity<List<ProjectResponseDto>> getAllProjects() {
         List<ProjectResponseDto> projectResponseDto = projectService.getAllProjects();
         return ResponseEntity.ok().body(projectResponseDto);
@@ -43,6 +45,7 @@ public class ProjectController {
 
     @Operation(summary = "Получить проект по id")
     @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('users:read')")
     public ResponseEntity<ProjectResponseDto> getProjectById(@PathVariable Long id) {
         ProjectResponseDto responseDto = projectService.getById(id);
         return ResponseEntity.ok().body(responseDto);
@@ -50,6 +53,7 @@ public class ProjectController {
 
     @Operation(summary = "Добавить проект")
     @PostMapping("/")
+    @PreAuthorize("hasAuthority('users:write')")
     public ResponseEntity<ProjectResponseDto> addProject(@RequestBody ProjectRequestDto requestDto) {
         // добавление в БД
         ProjectResponseDto responseDto = projectService.addProject(requestDto);
@@ -58,6 +62,7 @@ public class ProjectController {
 
     @Operation(summary = "Обновление проекта")
     @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('users:write')")
     public ResponseEntity<ProjectResponseDto> updateProject(@PathVariable Long id,
                                                              @RequestBody ProjectRequestDto requestDto) throws IOException {
         // обновление сущности в БД
@@ -68,6 +73,7 @@ public class ProjectController {
 
     @Operation(summary = "Удаление проекта")
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('users:write')")
     public ResponseEntity<String> deleteProject(@PathVariable Long id) {
         // удаление сущности из БД
         ProjectResponseDto responseDto = projectService.deleteProject(id);
@@ -81,6 +87,7 @@ public class ProjectController {
 
     @Operation(summary = "Завершение проекта")
     @PutMapping("/{id}/finish")
+    @PreAuthorize("hasAuthority('users:write')")
     public ResponseEntity<String> finishProject(@PathVariable Long id) throws IOException {
 
         ResponseEntity<String> responseEntity = new ResponseEntity<>(
@@ -91,7 +98,7 @@ public class ProjectController {
         long count = taskService.unfinishedTasksByProjectId(id).stream().count();
         boolean projectIsFinished = count < 1;
         if (projectIsFinished) {
-            projectService.setFinishedStatusProject(id);
+            ProjectResponseDto projectResponseDto = projectService.setFinishedStatusProject(id);
             responseEntity = new ResponseEntity<>(
                     String.format("Проект с id #%d был успешно завершен", id),
                     HttpStatus.OK
