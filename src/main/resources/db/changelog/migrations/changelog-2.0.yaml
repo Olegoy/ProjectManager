@@ -35,3 +35,16 @@ databaseChangeLog:
             columns:
               - column: { name: user_id, type: BIGINT, constraints: { nullable: false, foreignKeyName: fk_user_role, references: users(id) } }
               - column: { name: roles, type: VARCHAR(255) }
+
+  - changeSet:
+      id: addColumn-password-to-user
+      author: Oleg Yashkin
+      changes:
+        - addColumn:
+            tableName: users
+            columns:
+              - column:
+                  name: password
+                  type: varchar(255)
+                  constraints:
+                    nullable: true
