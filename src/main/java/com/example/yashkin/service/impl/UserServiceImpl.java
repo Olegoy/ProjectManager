@@ -7,39 +7,38 @@ import com.example.yashkin.repository.UserRepository;
 import com.example.yashkin.rest.dto.UserRequestDto;
 import com.example.yashkin.rest.dto.UserResponseDto;
 import com.example.yashkin.service.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
-public class UserServiceImpl implements UserService, UserDetailsService {
+public class UserServiceImpl implements UserService {
 
     private static Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
 
     private UserRepository userRepository;
     private UserMapper userMapper;
 
-    @Transactional
-    @Override
-    public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
-        return userRepository.getUserByLogin(login).orElseThrow(() -> {
-            UsernameNotFoundException exception = new UsernameNotFoundException(
-                    String.format("Пользователь с логином #%s не существует", login)
-            );
-            log.error(exception.getMessage(), exception);
-            throw exception;
-        });
-    }
-
     public UserServiceImpl(UserRepository userRepository, @Qualifier("userMapperImpl") UserMapper userMapper) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
+    }
+
+    @Transactional
+    @Override
+    public List<UserResponseDto> getUsers() {
+        List<UserEntity> allUsersEntity = userRepository.findAll();
+        List<UserResponseDto> allUsers = allUsersEntity.stream()
+                .map(userMapper::userResponseDtoFromUserEntity)
+                .collect(Collectors.toList());
+
+        log.info("got all users");
+        return allUsers;
     }
 
     @Transactional

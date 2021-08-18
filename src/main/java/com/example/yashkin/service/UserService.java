@@ -3,11 +3,20 @@ package com.example.yashkin.service;
 import com.example.yashkin.rest.dto.UserRequestDto;
 import com.example.yashkin.rest.dto.UserResponseDto;
 
+import java.util.List;
+
 /**
  * Interface with methods for user management
  * @author Oleg Yaskin
  */
 public interface UserService {
+
+    /**
+     * Method for getting a user from the database by ID
+     *
+     * @return List<UserResponseDto></UserResponseDto>
+     */
+    List<UserResponseDto> getUsers();
 
     /**
      * Method for getting a user from the database by ID

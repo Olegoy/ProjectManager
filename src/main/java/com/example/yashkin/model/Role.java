@@ -9,6 +9,8 @@ import java.util.stream.Collectors;
 
 public enum Role implements GrantedAuthority, Serializable {
     USER(Set.of(Permission.USERS_READ)),
+    AUTHOR(Set.of(Permission.USERS_READ, Permission.USERS_WRITE)),
+    EXECUTOR(Set.of(Permission.USERS_READ, Permission.USERS_WRITE)),
     ADMIN(Set.of(Permission.USERS_READ, Permission.USERS_WRITE));
 
     private final Set<Permission> permissions;

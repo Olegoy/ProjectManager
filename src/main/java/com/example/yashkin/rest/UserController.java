@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 @Tag(name = "Пользователи", description = "CRUD Пользователей")
@@ -37,12 +36,7 @@ public class UserController {
     @GetMapping("/")
     @PreAuthorize("hasAuthority('users:read')")
     public ResponseEntity<List<UserResponseDto>> getUsers() {
-        UserResponseDto user = new UserResponseDto("firstName1", "secondName1");
-        UserResponseDto user2 = new UserResponseDto("firstName2", "secondName2");
-
-        List<UserResponseDto> results =  new ArrayList<>();
-        results.add(user);
-        results.add(user2);
+        List<UserResponseDto> results = userService.getUsers();
         return ResponseEntity.ok().body(results);
     }
 
