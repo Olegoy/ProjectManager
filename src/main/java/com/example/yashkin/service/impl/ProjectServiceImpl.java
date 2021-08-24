@@ -2,6 +2,7 @@ package com.example.yashkin.service.impl;
 
 import com.example.yashkin.entity.ProjectEntity;
 import com.example.yashkin.exception.NotFoundException;
+import com.example.yashkin.feign.BankAccountClient;
 import com.example.yashkin.mappers.ProjectMapper;
 import com.example.yashkin.model.ProjectStatus;
 import com.example.yashkin.repository.ProjectRepository;
@@ -22,13 +23,13 @@ import java.util.stream.Collectors;
 public class ProjectServiceImpl implements ProjectService {
     private static Logger log = LoggerFactory.getLogger(ProjectServiceImpl.class);
 
-    private ProjectRepository projectRepository;
+    private final ProjectRepository projectRepository;
+    BankAccountClient bankAccountClient;
+    private final ProjectMapper projectMapper;
 
-    private ProjectMapper projectMapper;
-
-    public ProjectServiceImpl(ProjectRepository projectRepository, @Qualifier("projectMapperImpl") ProjectMapper INSTANCE) {
+    public ProjectServiceImpl(ProjectRepository projectRepository, @Qualifier("projectMapperImpl") ProjectMapper projectMapper) {
         this.projectRepository = projectRepository;
-        this.projectMapper = INSTANCE;
+        this.projectMapper = projectMapper;
     }
 
     @Transactional
@@ -37,7 +38,7 @@ public class ProjectServiceImpl implements ProjectService {
 
          List<ProjectEntity> allProjectsEntity = projectRepository.findAll();
         List<ProjectResponseDto> allProjects = allProjectsEntity.stream()
-                .map(s -> projectMapper.projectResponseDtoFromProjectEntity(s))
+                .map(projectMapper::projectResponseDtoFromProjectEntity)
                 .collect(Collectors.toList());
         log.info("got all projects");
         return allProjects;
@@ -60,13 +61,19 @@ public class ProjectServiceImpl implements ProjectService {
     @Transactional
     @Override
     public ProjectResponseDto addProject(ProjectRequestDto projectRequestDto) {
-        ProjectEntity entity = projectMapper.projectEntityFromProjectRequestDto(projectRequestDto);
-        entity.setCustomer(projectMapper.projectEntityFromProjectRequestDto(projectRequestDto).getCustomer());
-        entity.setProjectName(projectRequestDto.getProjectName());
-        entity.setStatus(projectRequestDto.getStatus());
-        ProjectResponseDto projectResponseDto = projectMapper.projectResponseDtoFromProjectEntity(entity);
-        log.info("project added");
-        return  projectResponseDto;
+        if (Boolean.TRUE.equals(bankAccountClient.checkOperationByOwners(projectRequestDto.getCustomer().getFirstName() + projectRequestDto.getCustomer().getLastName(), projectRequestDto.getProjectName()).getBody())) {
+            ProjectEntity entity = projectMapper.projectEntityFromProjectRequestDto(projectRequestDto);
+            entity.setCustomer(projectMapper.projectEntityFromProjectRequestDto(projectRequestDto).getCustomer());
+            entity.setProjectName(projectRequestDto.getProjectName());
+            entity.setStatus(projectRequestDto.getStatus());
+            ProjectResponseDto projectResponseDto = projectMapper.projectResponseDtoFromProjectEntity(entity);
+            log.info("project added");
+            return projectResponseDto;
+        }
+        else {
+            log.error("Project did not create!");
+            throw new NotFoundException("Project is not paid");
+        }
         //return entity;
     }
 

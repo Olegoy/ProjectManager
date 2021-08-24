@@ -20,6 +20,12 @@ public class ProjectRequestDto {
         this.customer = customer;
     }
 
+    public ProjectRequestDto(String projectName, UserRequestDto customer, ProjectStatus status) {
+        this.projectName = projectName;
+        this.customer = customer;
+        this.status = status;
+    }
+
     public String getProjectName() {
         return projectName;
     }

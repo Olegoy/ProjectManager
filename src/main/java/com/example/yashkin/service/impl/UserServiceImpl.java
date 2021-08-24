@@ -21,8 +21,8 @@ public class UserServiceImpl implements UserService {
 
     private static Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
 
-    private UserRepository userRepository;
-    private UserMapper userMapper;
+    private final UserRepository userRepository;
+    private final UserMapper userMapper;
 
     public UserServiceImpl(UserRepository userRepository, @Qualifier("userMapperImpl") UserMapper userMapper) {
         this.userRepository = userRepository;
