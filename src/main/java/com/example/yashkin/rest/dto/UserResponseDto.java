@@ -20,6 +20,9 @@ public class UserResponseDto {
     @Schema(description = "Login пользователя")
     private String login;
 
+    @Schema(description = "Пароль пользователя")
+    private String password;
+
     @Schema(description = "Роли пользователя")
     private Set<Role> roles;
 
@@ -46,6 +49,15 @@ public class UserResponseDto {
         this.firstName = firstName;
         this.lastName = lastName;
         this.login = login;
+        this.roles = roles;
+    }
+
+    public UserResponseDto(Long id, String firstName, String lastName, String login, String password, Set<Role> roles) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.login = login;
+        this.password = password;
         this.roles = roles;
     }
 
@@ -79,6 +91,14 @@ public class UserResponseDto {
 
     public void setLogin(String login) {
         this.login = login;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public Set<Role> getRoles() {

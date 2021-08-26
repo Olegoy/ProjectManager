@@ -27,9 +27,10 @@ public class ProjectServiceImpl implements ProjectService {
     BankAccountClient bankAccountClient;
     private final ProjectMapper projectMapper;
 
-    public ProjectServiceImpl(ProjectRepository projectRepository, @Qualifier("projectMapperImpl") ProjectMapper projectMapper) {
+    public ProjectServiceImpl(ProjectRepository projectRepository, @Qualifier("projectMapperImpl") ProjectMapper projectMapper, BankAccountClient bankAccountClient) {
         this.projectRepository = projectRepository;
         this.projectMapper = projectMapper;
+        this.bankAccountClient = bankAccountClient;
     }
 
     @Transactional
@@ -63,15 +64,14 @@ public class ProjectServiceImpl implements ProjectService {
     public ProjectResponseDto addProject(ProjectRequestDto projectRequestDto) {
         if (Boolean.TRUE.equals(bankAccountClient.checkOperationByOwners(projectRequestDto.getCustomer().getFirstName() + projectRequestDto.getCustomer().getLastName(), projectRequestDto.getProjectName()).getBody())) {
             ProjectEntity entity = projectMapper.projectEntityFromProjectRequestDto(projectRequestDto);
-            entity.setCustomer(projectMapper.projectEntityFromProjectRequestDto(projectRequestDto).getCustomer());
-            entity.setProjectName(projectRequestDto.getProjectName());
-            entity.setStatus(projectRequestDto.getStatus());
+            entity.setId(null);
+            projectRepository.save(entity);
             ProjectResponseDto projectResponseDto = projectMapper.projectResponseDtoFromProjectEntity(entity);
             log.info("project added");
             return projectResponseDto;
         }
         else {
-            log.error("Project did not create!");
+            log.error("Project did not create! It didn't pay!");
             throw new NotFoundException("Project is not paid");
         }
         //return entity;
