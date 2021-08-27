@@ -62,7 +62,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponseDto addUser(UserRequestDto userRequestDto) {
 
-        System.out.println("Вызов метода add User");
+        log.info("Вызов метода add User");
         UserEntity entity = userMapper.userEntityFromUserRequestDto(userRequestDto);
 
         entity.setId(null);

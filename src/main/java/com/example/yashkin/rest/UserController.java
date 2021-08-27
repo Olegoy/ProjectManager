@@ -48,7 +48,6 @@ public class UserController {
 /*    public ResponseEntity<String> addUser(@RequestBody UserRequestDto requestDto) {*/
     public ResponseEntity<UserResponseDto> addUser(@RequestBody UserRequestDto requestDto) {
         // добавление в БД
-        System.out.println("Вызов контроллера add User");
 
         UserResponseDto responseDto = userService.addUser(requestDto);
 /*        String responseDto = userService.addUser(requestDto);*/

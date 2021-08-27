@@ -9,6 +9,7 @@ import com.example.yashkin.repository.ProjectRepository;
 import com.example.yashkin.rest.dto.ProjectRequestDto;
 import com.example.yashkin.rest.dto.ProjectResponseDto;
 import com.example.yashkin.service.ProjectService;
+import com.example.yashkin.utils.Users;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,7 +25,7 @@ public class ProjectServiceImpl implements ProjectService {
     private static Logger log = LoggerFactory.getLogger(ProjectServiceImpl.class);
 
     private final ProjectRepository projectRepository;
-    BankAccountClient bankAccountClient;
+    private final BankAccountClient bankAccountClient;
     private final ProjectMapper projectMapper;
 
     public ProjectServiceImpl(ProjectRepository projectRepository, @Qualifier("projectMapperImpl") ProjectMapper projectMapper, BankAccountClient bankAccountClient) {
@@ -62,7 +63,7 @@ public class ProjectServiceImpl implements ProjectService {
     @Transactional
     @Override
     public ProjectResponseDto addProject(ProjectRequestDto projectRequestDto) {
-        if (Boolean.TRUE.equals(bankAccountClient.checkOperationByOwners(projectRequestDto.getCustomer().getFirstName() + projectRequestDto.getCustomer().getLastName(), projectRequestDto.getProjectName()).getBody())) {
+        if (Boolean.TRUE.equals(bankAccountClient.checkOperationByOwners(Users.getFullName(projectRequestDto.getCustomer().getFirstName(), projectRequestDto.getCustomer().getLastName()), Users.getFullName(projectRequestDto.getProjectName())).getBody())) {
             ProjectEntity entity = projectMapper.projectEntityFromProjectRequestDto(projectRequestDto);
             entity.setId(null);
             projectRepository.save(entity);
