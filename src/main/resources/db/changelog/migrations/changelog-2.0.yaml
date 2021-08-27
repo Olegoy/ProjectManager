@@ -48,3 +48,13 @@ databaseChangeLog:
                   type: varchar(255)
                   constraints:
                     nullable: true
+
+  - changeSet:
+      id: dropColumn-role-from-user
+      author: Oleg Yashkin
+      changes:
+        - dropColumn:
+            tableName: users
+            columns:
+              - column:
+                  name: role

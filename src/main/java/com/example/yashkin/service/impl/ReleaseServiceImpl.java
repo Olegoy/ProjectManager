@@ -19,8 +19,8 @@ public class ReleaseServiceImpl implements ReleaseService {
 
     private static Logger log = LoggerFactory.getLogger(ReleaseServiceImpl.class);
 
-    private ReleaseRepository releaseRepository;
-    private ReleaseMapper releaseMapper;
+    private final ReleaseRepository releaseRepository;
+    private final ReleaseMapper releaseMapper;
 
     public ReleaseServiceImpl(ReleaseRepository releaseRepository, @Qualifier("releaseMapperImpl") ReleaseMapper INSTANCE) {
         this.releaseRepository = releaseRepository;

@@ -1,5 +1,6 @@
 package com.example.yashkin.rest;
 
+import com.example.yashkin.model.Role;
 import com.example.yashkin.rest.dto.UserRequestDto;
 import com.example.yashkin.rest.dto.UserResponseDto;
 import com.example.yashkin.service.UserService;
@@ -8,18 +9,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Set;
 
 @Tag(name = "Пользователи", description = "CRUD Пользователей")
 @RestController
@@ -51,9 +45,12 @@ public class UserController {
     @Operation(summary = "Добавить пользователя")
     @PostMapping("/")
     @PreAuthorize("hasAuthority('users:write')")
+/*    public ResponseEntity<String> addUser(@RequestBody UserRequestDto requestDto) {*/
     public ResponseEntity<UserResponseDto> addUser(@RequestBody UserRequestDto requestDto) {
         // добавление в БД
+
         UserResponseDto responseDto = userService.addUser(requestDto);
+/*        String responseDto = userService.addUser(requestDto);*/
 
         return ResponseEntity.ok().body(responseDto);
     }

@@ -8,6 +8,9 @@ import java.util.Set;
 @Schema(description = "Пользователь")
 public class UserRequestDto {
 
+    @Schema(description = "ID пользователя")
+    private Long id;
+
     @Schema(description = "Имя пользователя")
     private String firstName;
 
@@ -17,20 +20,27 @@ public class UserRequestDto {
     @Schema(description = "Login пользователя")
     private String login;
 
+    @Schema(description = "Пароль пользователя")
+    private String password;
+
     @Schema(description = "Роли пользователя")
     private Set<Role> roles;
 
-    public UserRequestDto(String firstName, String lastName, String login) {
+    public UserRequestDto(Long id, String firstName, String lastName, String login, String password, Set<Role> roles) {
+        this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
         this.login = login;
+        this.password = password;
+        this.roles = roles;
     }
 
-    public UserRequestDto(String firstName, String lastName, String login, Set<Role> roles) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.login = login;
-        this.roles = roles;
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getFirstName() {
@@ -55,6 +65,14 @@ public class UserRequestDto {
 
     public void setLogin(String login) {
         this.login = login;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
     }
 
     public Set<Role> getRoles() {

@@ -43,23 +43,13 @@ public class UserEntity {
     @Enumerated(EnumType.STRING)
     private Set<Role> roles;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "customer")
-    private Set<ProjectEntity> projects;
-
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "author")
     private Set<TaskEntity> tasksAsAuthor;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "executor")
+    @OneToMany(cascade = { CascadeType.MERGE, CascadeType.PERSIST },  mappedBy = "executor")
     private Set<TaskEntity> tasksAsExecutor;
 
     public UserEntity() {
-    }
-
-    public UserEntity(String firstName, String lastName, String login, String password) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.login = login;
-        this.password = password;
     }
 
     public UserEntity(Long id, String firstName, String lastName, String login, String password, Set<Role> roles) {
@@ -69,6 +59,17 @@ public class UserEntity {
         this.login = login;
         this.password = password;
         this.roles = roles;
+    }
+
+    public UserEntity(Long id, String firstName, String lastName, String login, String password, Set<Role> roles, Set<TaskEntity> tasksAsAuthor, Set<TaskEntity> tasksAsExecutor) {
+        this.id = id;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.login = login;
+        this.password = password;
+        this.roles = roles;
+        this.tasksAsAuthor = tasksAsAuthor;
+        this.tasksAsExecutor = tasksAsExecutor;
     }
 
     public Long getId() {
@@ -117,14 +118,6 @@ public class UserEntity {
 
     public void setRoles(Set<Role> roles) {
         this.roles = roles;
-    }
-
-    public Set<ProjectEntity> getProjects() {
-        return projects;
-    }
-
-    public void setProjects(Set<ProjectEntity> projects) {
-        this.projects = projects;
     }
 
     public Set<TaskEntity> getTasksAsAuthor() {
