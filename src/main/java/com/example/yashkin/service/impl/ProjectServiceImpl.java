@@ -9,6 +9,7 @@ import com.example.yashkin.repository.ProjectRepository;
 import com.example.yashkin.rest.dto.ProjectRequestDto;
 import com.example.yashkin.rest.dto.ProjectResponseDto;
 import com.example.yashkin.service.ProjectService;
+import com.example.yashkin.utils.Translator;
 import com.example.yashkin.utils.Users;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -22,7 +23,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class ProjectServiceImpl implements ProjectService {
-    private static Logger log = LoggerFactory.getLogger(ProjectServiceImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(ProjectServiceImpl.class);
 
     private final ProjectRepository projectRepository;
     private final BankAccountClient bankAccountClient;
@@ -49,9 +50,9 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Transactional
     @Override
-    public ProjectResponseDto getById(Long id) throws NullPointerException {
+    public ProjectResponseDto getById(Long id) {
         ProjectEntity projectEntity = projectRepository.findById(id).orElseThrow(
-                () -> new NotFoundException(String.format("Project with ID = %d not found", id))
+                () -> new NotFoundException(String.format(Translator.toLocale("project.exception.not_found_by_id"), id))
         );
 
         ProjectResponseDto projectResponseDto = projectMapper.projectResponseDtoFromProjectEntity(projectEntity);
@@ -73,16 +74,16 @@ public class ProjectServiceImpl implements ProjectService {
         }
         else {
             log.error("Project did not create! It didn't pay!");
-            throw new NotFoundException("Project is not paid");
+            throw new NotFoundException(Translator.toLocale("project.exception.not_found_not_paid"));
         }
         //return entity;
     }
 
     @Transactional
     @Override
-    public ProjectResponseDto updateProject(Long id, ProjectRequestDto projectRequestDto) throws NullPointerException {
+    public ProjectResponseDto updateProject(Long id, ProjectRequestDto projectRequestDto) {
         ProjectEntity entity = projectRepository.findById(id).orElseThrow(
-                () -> new NotFoundException(String.format("Project with ID = %d not found", id))
+                () -> new NotFoundException(String.format(Translator.toLocale("project.exception.not_found_by_id"), id))
         );
         entity.setProjectName(projectRequestDto.getProjectName());
         entity.setCustomer(projectMapper.projectEntityFromProjectRequestDto(projectRequestDto).getCustomer());
@@ -95,9 +96,9 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Transactional
     @Override
-    public ProjectResponseDto setFinishedStatusProject(Long id) throws NullPointerException {
+    public ProjectResponseDto setFinishedStatusProject(Long id) {
         ProjectEntity entity = projectRepository.findById(id).orElseThrow(
-                () -> new NotFoundException(String.format("Project with ID = %d not found", id))
+                () -> new NotFoundException(String.format(Translator.toLocale("project.exception.not_found_by_id"), id))
         );
         entity.setStatus(ProjectStatus.FINISHED);
 
@@ -108,9 +109,9 @@ public class ProjectServiceImpl implements ProjectService {
 
     @Transactional
     @Override
-    public ProjectResponseDto deleteProject(Long id) throws NullPointerException {
+    public ProjectResponseDto deleteProject(Long id) {
         ProjectEntity entity = projectRepository.findById(id).orElseThrow(
-                () -> new NotFoundException(String.format("Project with ID = %d not found", id))
+                () -> new NotFoundException(String.format(Translator.toLocale("project.exception.not_found_by_id"), id))
         );
         projectRepository.delete(entity);
         ProjectResponseDto projectResponseDto = projectMapper.projectResponseDtoFromProjectEntity(entity);

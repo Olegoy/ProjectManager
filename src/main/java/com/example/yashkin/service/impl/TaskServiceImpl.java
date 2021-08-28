@@ -1,9 +1,6 @@
 package com.example.yashkin.service.impl;
 
-import com.example.yashkin.entity.ProjectEntity;
-import com.example.yashkin.entity.ReleaseEntity;
 import com.example.yashkin.entity.TaskEntity;
-import com.example.yashkin.entity.UserEntity;
 import com.example.yashkin.exception.NotFoundException;
 import com.example.yashkin.mappers.TaskMapper;
 import com.example.yashkin.model.TaskStatus;
@@ -18,13 +15,13 @@ import com.example.yashkin.rest.dto.TaskRequestDto;
 import com.example.yashkin.rest.dto.TaskResponseDto;
 import com.example.yashkin.rest.dto.UserRequestDto;
 import com.example.yashkin.service.TaskService;
+import com.example.yashkin.utils.Translator;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.core.io.InputStreamResource;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,8 +30,6 @@ import javax.persistence.criteria.Predicate;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -42,7 +37,7 @@ import java.util.stream.Collectors;
 @Service
 public class TaskServiceImpl implements TaskService {
 
-    private static Logger log = LoggerFactory.getLogger(TaskServiceImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(TaskServiceImpl.class);
 
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
@@ -109,9 +104,9 @@ public class TaskServiceImpl implements TaskService {
 
     @Transactional
     @Override
-    public TaskResponseDto getById(Long id) throws NullPointerException {
+    public TaskResponseDto getById(Long id) {
         TaskEntity taskEntity = taskRepository.findById(id).orElseThrow(
-                () -> new NotFoundException(String.format("Task with ID = %d not found", id))
+                () -> new NotFoundException(String.format(Translator.toLocale("task.exception.not_found_by_id"), id))
         );
 
         TaskResponseDto responseDto = taskMapper.taskResponseDtoFromTaskEntity(taskEntity);
@@ -137,10 +132,10 @@ public class TaskServiceImpl implements TaskService {
 
     @Transactional
     @Override
-    public TaskResponseDto updateTask(Long id, TaskRequestDto taskRequestDto) throws NullPointerException {
+    public TaskResponseDto updateTask(Long id, TaskRequestDto taskRequestDto) {
         log.info("Start task updated");
         TaskEntity entity = taskRepository.findById(id).orElseThrow(
-                () -> new NotFoundException(String.format("Task with ID = %d not found", id))
+                () -> new NotFoundException(String.format(Translator.toLocale("task.exception.not_found_by_id"), id))
         );
         entity.setName(taskRequestDto.getName());
         entity.setAuthor(taskMapper.taskEntityFromTaskRequestDto(taskRequestDto).getAuthor());
@@ -157,9 +152,9 @@ public class TaskServiceImpl implements TaskService {
 
     @Transactional
     @Override
-    public TaskResponseDto deleteTask(Long id) throws NullPointerException {
+    public TaskResponseDto deleteTask(Long id) {
         TaskEntity entity = taskRepository.findById(id).orElseThrow(
-                () -> new NotFoundException(String.format("Task with ID = %d not found", id))
+                () -> new NotFoundException(String.format(Translator.toLocale("task.exception.not_found_by_id"), id))
         );
         taskRepository.delete(entity);
         TaskResponseDto responseDto = taskMapper.taskResponseDtoFromTaskEntity(entity);
@@ -210,7 +205,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public TaskResponseDto setStatusTask(Long id, TaskStatus status) {
         TaskEntity entity = taskRepository.findById(id).orElseThrow(
-                () -> new NotFoundException(String.format("Task with ID = %d not found", id))
+                () -> new NotFoundException(String.format(Translator.toLocale("task.exception.not_found_by_id"), id))
         );
 
         entity.setStatus(status);
@@ -224,7 +219,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public TaskResponseDto setReleaseTask(Long id, Long releaseId) {
         TaskEntity entity = taskRepository.findById(id).orElseThrow(
-                () -> new NotFoundException(String.format("Task with ID = %d not found", id))
+                () -> new NotFoundException(String.format(Translator.toLocale("task.exception.not_found_by_id"), id))
         );
         entity.setRelease(releaseRepository.getById(releaseId));
         TaskResponseDto responseDto = taskMapper.taskResponseDtoFromTaskEntity(entity);
@@ -272,7 +267,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public TaskResponseDto setExecutorTask(Long id, Long userId) {
         TaskEntity entity = taskRepository.findById(id).orElseThrow(
-                () -> new NotFoundException(String.format("Task with ID = %d not found", id))
+                () -> new NotFoundException(String.format(Translator.toLocale("task.exception.not_found_by_id"), id))
         );
         entity.setExecutor(userRepository.getById(userId));
         TaskResponseDto responseDto = taskMapper.taskResponseDtoFromTaskEntity(entity);

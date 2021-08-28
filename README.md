@@ -1,12 +1,12 @@
 # ProjectManager. This service is designed for project management.
 The following technologies were used in the development this program:
-- Spring boot, data, JPA, security, criteria API;
+- Spring Boot, Spring Web, Spring Security, Spring Data JPA, criteria API;
 - Liquibase;
 - PostgreSQL;
 - Mapstruct;
 - JUnit;
 - Mockito;
-- commons CSV;
+- Apache CSV;
 - Swagger;
 - Open Feign.
 
