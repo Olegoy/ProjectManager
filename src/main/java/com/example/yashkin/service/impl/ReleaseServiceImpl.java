@@ -1,11 +1,13 @@
 package com.example.yashkin.service.impl;
 
 import com.example.yashkin.entity.ReleaseEntity;
+import com.example.yashkin.entity.TaskEntity;
 import com.example.yashkin.exception.NotFoundException;
 import com.example.yashkin.mappers.ReleaseMapper;
 import com.example.yashkin.repository.ReleaseRepository;
 import com.example.yashkin.rest.dto.ReleaseRequestDto;
 import com.example.yashkin.rest.dto.ReleaseResponseDto;
+import com.example.yashkin.rest.dto.TaskResponseDto;
 import com.example.yashkin.service.ReleaseService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -13,6 +15,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ReleaseServiceImpl implements ReleaseService {
@@ -25,6 +31,18 @@ public class ReleaseServiceImpl implements ReleaseService {
     public ReleaseServiceImpl(ReleaseRepository releaseRepository, @Qualifier("releaseMapperImpl") ReleaseMapper INSTANCE) {
         this.releaseRepository = releaseRepository;
         this.releaseMapper = INSTANCE;
+    }
+
+    @Transactional
+    @Override
+    public List<ReleaseResponseDto> getAllRelease() {
+        List<ReleaseEntity> allReleaseEntity = releaseRepository.findAll();
+        List<ReleaseResponseDto> allRelease = allReleaseEntity.stream()
+                .map(releaseMapper::releaseResponseDtoFromReleaseEntity)
+                .collect(Collectors.toList());
+
+        log.info("got all release");
+        return allRelease;
     }
 
     @Transactional
@@ -46,6 +64,9 @@ public class ReleaseServiceImpl implements ReleaseService {
     public ReleaseResponseDto addRelease(ReleaseRequestDto releaseRequestDto) {
 
         ReleaseEntity entity = releaseMapper.releaseEntityFromReleaseRequestDto(releaseRequestDto);
+      //  entity.setId(null);
+        entity.setDateStart(LocalDateTime.now());
+        entity.setDateEnd(null);
         releaseRepository.save(entity);
 
         ReleaseResponseDto responseDto = releaseMapper.releaseResponseDtoFromReleaseEntity(entity);

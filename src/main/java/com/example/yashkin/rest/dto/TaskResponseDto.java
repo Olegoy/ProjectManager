@@ -8,9 +8,6 @@ import java.time.LocalDateTime;
 @Schema(description = "Задача")
 public class TaskResponseDto {
 
-    @Schema(description = "Проект, к которому относится задача")
-    private ProjectResponseDto project;
-
     @Schema(description = "ID задачи")
     private Long id;
 
@@ -32,6 +29,9 @@ public class TaskResponseDto {
     @Schema(description = "Приоритет задачи")
     private Long priority;
 
+    @Schema(description = "Проект, к которому относится задача")
+    private ProjectResponseDto projectId;
+
     @Schema(description = "Релиз")
     private ReleaseResponseDto release;
 
@@ -43,13 +43,7 @@ public class TaskResponseDto {
         this.id = id;
     }
 
-    public TaskResponseDto(String name, UserResponseDto author) {
-        this.name = name;
-        this.author = author;
-    }
-
-    public TaskResponseDto(ProjectResponseDto project, Long id, String name, UserResponseDto author, UserResponseDto executor, String type, TaskStatus status, Long priority, ReleaseResponseDto release) {
-        this.project = project;
+    public TaskResponseDto(Long id, String name, UserResponseDto author, UserResponseDto executor, String type, TaskStatus status, Long priority, ProjectResponseDto projectId, ReleaseResponseDto release) {
         this.id = id;
         this.name = name;
         this.author = author;
@@ -57,15 +51,19 @@ public class TaskResponseDto {
         this.type = type;
         this.status = status;
         this.priority = priority;
+        this.projectId = projectId;
         this.release = release;
     }
 
-    public ProjectResponseDto getProject() {
-        return project;
-    }
-
-    public void setProject(ProjectResponseDto project) {
-        this.project = project;
+    public TaskResponseDto(Long id, String name, UserResponseDto author, String type, TaskStatus status, Long priority, ProjectResponseDto projectId, ReleaseResponseDto release) {
+        this.id = id;
+        this.name = name;
+        this.author = author;
+        this.type = type;
+        this.status = status;
+        this.priority = priority;
+        this.projectId = projectId;
+        this.release = release;
     }
 
     public Long getId() {
@@ -122,6 +120,14 @@ public class TaskResponseDto {
 
     public void setPriority(Long priority) {
         this.priority = priority;
+    }
+
+    public ProjectResponseDto getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(ProjectResponseDto projectId) {
+        this.projectId = projectId;
     }
 
     public ReleaseResponseDto getRelease() {

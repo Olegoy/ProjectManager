@@ -28,14 +28,22 @@ public class ReleaseEntity {
     @Column(name = "date_end")
     private LocalDateTime dateEnd;
 
-
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "release")
     private Set<TaskEntity> tasks;
 
     public ReleaseEntity() {
     }
 
-    public ReleaseEntity(Integer version, LocalDateTime dateStart, LocalDateTime dateEnd) {
+    public ReleaseEntity(Long id, Integer version, LocalDateTime dateStart, LocalDateTime dateEnd, Set<TaskEntity> tasks) {
+        this.id = id;
+        this.version = version;
+        this.dateStart = dateStart;
+        this.dateEnd = dateEnd;
+        this.tasks = tasks;
+    }
+
+    public ReleaseEntity(Long id, Integer version, LocalDateTime dateStart, LocalDateTime dateEnd) {
+        this.id = id;
         this.version = version;
         this.dateStart = dateStart;
         this.dateEnd = dateEnd;
@@ -71,5 +79,13 @@ public class ReleaseEntity {
 
     public void setDateEnd(LocalDateTime dateEnd) {
         this.dateEnd = dateEnd;
+    }
+
+    public Set<TaskEntity> getTasks() {
+        return tasks;
+    }
+
+    public void setTasks(Set<TaskEntity> tasks) {
+        this.tasks = tasks;
     }
 }

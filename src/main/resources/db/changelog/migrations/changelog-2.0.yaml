@@ -58,3 +58,26 @@ databaseChangeLog:
             columns:
               - column:
                   name: role
+
+  - changeSet:
+      id: dropColumn-date-end-from-release
+      author: Oleg Yashkin
+      changes:
+        - dropColumn:
+            tableName: release
+            columns:
+              - column:
+                  name: date_end
+
+  - changeSet:
+      id: addColumn-date_end-to-release
+      author: Oleg Yashkin
+      changes:
+        - addColumn:
+            tableName: release
+            columns:
+              - column:
+                  name: date_end
+                  type: TIMESTAMP
+                  constraints:
+                    nullable: true

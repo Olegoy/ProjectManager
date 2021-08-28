@@ -6,6 +6,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 @Schema(description = "Задача")
 public class TaskRequestDto {
 
+    @Schema(description = "ID задачи")
+    private Long id;
+
     @Schema(description = "Название задачи")
     private String name;
 
@@ -24,26 +27,33 @@ public class TaskRequestDto {
     @Schema(description = "Приоритет задачи")
     private Integer priority;
 
+    @Schema(description = "Проект, к которому относится задача")
+    private ProjectRequestDto projectId;
+
     @Schema(description = "Релиз задачи")
     private ReleaseRequestDto release;
 
-    @Schema(description = "Проект, к которому относится задача")
-    private ReleaseRequestDto projectId;
-
-    public TaskRequestDto(String name, UserRequestDto author) {
-        this.name = name;
-        this.author = author;
+    public TaskRequestDto() {
     }
 
-    public TaskRequestDto(String name, UserRequestDto author, UserRequestDto executor, String type, TaskStatus status, Integer priority, ReleaseRequestDto release, ReleaseRequestDto projectId) {
+    public TaskRequestDto(Long id, String name, UserRequestDto author, UserRequestDto executor, String type, TaskStatus status, Integer priority, ProjectRequestDto projectId, ReleaseRequestDto release) {
+        this.id = id;
         this.name = name;
         this.author = author;
         this.executor = executor;
         this.type = type;
         this.status = status;
         this.priority = priority;
-        this.release = release;
         this.projectId = projectId;
+        this.release = release;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -94,19 +104,19 @@ public class TaskRequestDto {
         this.priority = priority;
     }
 
+    public ProjectRequestDto getProjectId() {
+        return projectId;
+    }
+
+    public void setProjectId(ProjectRequestDto projectId) {
+        this.projectId = projectId;
+    }
+
     public ReleaseRequestDto getRelease() {
         return release;
     }
 
     public void setRelease(ReleaseRequestDto release) {
         this.release = release;
-    }
-
-    public ReleaseRequestDto getProjectId() {
-        return projectId;
-    }
-
-    public void setProjectId(ReleaseRequestDto projectId) {
-        this.projectId = projectId;
     }
 }

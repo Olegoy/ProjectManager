@@ -52,9 +52,27 @@ public class TaskEntity {
     public TaskEntity() {
     }
 
-    public TaskEntity(String name, UserEntity author) {
+    public TaskEntity(Long id, String name, UserEntity author, String type, TaskStatus status, Integer priority, ProjectEntity projectId, ReleaseEntity release) {
+        this.id = id;
         this.name = name;
         this.author = author;
+        this.type = type;
+        this.status = status;
+        this.priority = priority;
+        this.projectId = projectId;
+        this.release = release;
+    }
+
+    public TaskEntity(Long id, String name, UserEntity author, UserEntity executor, String type, TaskStatus status, Integer priority, ProjectEntity projectId, ReleaseEntity release) {
+        this.id = id;
+        this.name = name;
+        this.author = author;
+        this.executor = executor;
+        this.type = type;
+        this.status = status;
+        this.priority = priority;
+        this.projectId = projectId;
+        this.release = release;
     }
 
     public Long getId() {

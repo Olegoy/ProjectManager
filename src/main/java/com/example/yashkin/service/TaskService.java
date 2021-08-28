@@ -50,11 +50,11 @@ public interface TaskService {
     TaskResponseDto addTask(TaskRequestDto taskRequestDto);
 
     /**
-     *  Method for creating a task from CSV file
+     *  Method for creating a tasks from CSV file
      * @param multipartFile MultipartFile
-     * @return TaskResponseDto
+     * @return List<TaskResponseDto>
      */
-    TaskResponseDto createFromFile(MultipartFile multipartFile) throws IOException;
+    List<TaskResponseDto> createFromFile(MultipartFile multipartFile) throws IOException;
 
     /**
      * Method for updating the task

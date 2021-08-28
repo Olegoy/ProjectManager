@@ -1,5 +1,7 @@
 package com.example.yashkin.rest;
 
+import com.example.yashkin.entity.TaskEntity;
+import com.example.yashkin.entity.UserEntity;
 import com.example.yashkin.model.TaskStatus;
 import com.example.yashkin.rest.dto.TaskRequestDto;
 import com.example.yashkin.rest.dto.TaskResponseDto;
@@ -23,6 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Tag(name = "Задача", description = "CRUD задач")
@@ -103,10 +106,10 @@ public class TaskController {
     }
 
     @Operation(summary = "Создать задачу из файла CSV")
-    @PostMapping("/scv/")
+    @PostMapping("/csv/")
     @PreAuthorize("hasAuthority('users:write')")
-    public ResponseEntity<TaskResponseDto> createTaskFromCsv(@RequestParam("file") MultipartFile file) throws IOException {
-        TaskResponseDto responseDto = taskService.createFromFile(file);
+    public ResponseEntity<List<TaskResponseDto>> createTaskFromCsv(@RequestParam("file") MultipartFile file) throws IOException {
+        List<TaskResponseDto> responseDto = taskService.createFromFile(file);
         return ResponseEntity.ok().body(responseDto);
     }
 
@@ -115,6 +118,7 @@ public class TaskController {
     @PreAuthorize("hasAuthority('users:write')")
     public ResponseEntity<TaskResponseDto> addTask(@RequestBody TaskRequestDto requestDto) {
         // добавление в БД
+
         TaskResponseDto responseDto = taskService.addTask(requestDto);
 
         return ResponseEntity.ok().body(responseDto);
@@ -147,6 +151,7 @@ public class TaskController {
                                                           @RequestBody Long releaseId) throws IOException {
         // обновление сущности в БД
         TaskResponseDto responseDto = taskService.setReleaseTask(id, releaseId);
+
         return ResponseEntity.ok().body(responseDto);
     }
 

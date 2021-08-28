@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 @Tag(name = "Релиз", description = "CRUD Релиза")
@@ -37,12 +36,8 @@ public class ReleaseController {
     @GetMapping("/")
     @PreAuthorize("hasAuthority('users:read')")
     public ResponseEntity<List<ReleaseResponseDto>> getReleases() {
-        ReleaseResponseDto release = new ReleaseResponseDto(1);
-        ReleaseResponseDto release2 = new ReleaseResponseDto(2);
 
-        List<ReleaseResponseDto> results = new ArrayList<>();
-        results.add(release);
-        results.add(release2);
+        List<ReleaseResponseDto> results = releaseService.getAllRelease();
         return ResponseEntity.ok().body(results);
     }
 
