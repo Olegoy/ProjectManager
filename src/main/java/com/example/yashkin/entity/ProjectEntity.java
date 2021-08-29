@@ -34,6 +34,8 @@ public class ProjectEntity {
         this.projectName = projectName;
     }
 
+    public ProjectEntity(Long id, String projectName) { this.id = id; this.projectName = projectName;}
+
     public ProjectEntity(Long id, String projectName, ProjectStatus status, Set<TaskEntity> tasks, UserEntity customer) {
         this.id = id;
         this.projectName = projectName;

@@ -27,7 +27,7 @@ public class TaskResponseDto {
     private TaskStatus status;
 
     @Schema(description = "Приоритет задачи")
-    private Long priority;
+    private Integer priority;
 
     @Schema(description = "Проект, к которому относится задача")
     private ProjectResponseDto projectId;
@@ -43,7 +43,7 @@ public class TaskResponseDto {
         this.id = id;
     }
 
-    public TaskResponseDto(Long id, String name, UserResponseDto author, UserResponseDto executor, String type, TaskStatus status, Long priority, ProjectResponseDto projectId, ReleaseResponseDto release) {
+    public TaskResponseDto(Long id, String name, UserResponseDto author, UserResponseDto executor, String type, TaskStatus status, Integer priority, ProjectResponseDto projectId, ReleaseResponseDto release) {
         this.id = id;
         this.name = name;
         this.author = author;
@@ -55,7 +55,7 @@ public class TaskResponseDto {
         this.release = release;
     }
 
-    public TaskResponseDto(Long id, String name, UserResponseDto author, String type, TaskStatus status, Long priority, ProjectResponseDto projectId, ReleaseResponseDto release) {
+    public TaskResponseDto(Long id, String name, UserResponseDto author, String type, TaskStatus status, Integer priority, ProjectResponseDto projectId, ReleaseResponseDto release) {
         this.id = id;
         this.name = name;
         this.author = author;
@@ -114,11 +114,11 @@ public class TaskResponseDto {
         this.status = status;
     }
 
-    public Long getPriority() {
+    public Integer getPriority() {
         return priority;
     }
 
-    public void setPriority(Long priority) {
+    public void setPriority(Integer priority) {
         this.priority = priority;
     }
 

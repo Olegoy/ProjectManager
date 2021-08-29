@@ -21,6 +21,11 @@ public class ProjectResponseDto {
     public ProjectResponseDto() {
     }
 
+    public ProjectResponseDto(Long id, String projectName) {
+        this.id = id;
+        this.projectName = projectName;
+    }
+
     public ProjectResponseDto(Long id, String projectName, UserResponseDto customer, ProjectStatus status) {
         this.id = id;
         this.projectName = projectName;

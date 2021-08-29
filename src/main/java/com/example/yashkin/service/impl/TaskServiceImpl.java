@@ -4,11 +4,9 @@ import com.example.yashkin.entity.TaskEntity;
 import com.example.yashkin.exception.NotFoundException;
 import com.example.yashkin.mappers.TaskMapper;
 import com.example.yashkin.model.TaskStatus;
-import com.example.yashkin.repository.ProjectRepository;
 import com.example.yashkin.repository.ReleaseRepository;
 import com.example.yashkin.repository.TaskRepository;
 import com.example.yashkin.repository.UserRepository;
-
 import com.example.yashkin.rest.dto.ProjectRequestDto;
 import com.example.yashkin.rest.dto.ReleaseRequestDto;
 import com.example.yashkin.rest.dto.TaskRequestDto;
@@ -42,15 +40,13 @@ public class TaskServiceImpl implements TaskService {
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
     private final ReleaseRepository releaseRepository;
-    private final ProjectRepository projectRepository;
 
     private final TaskMapper taskMapper;
 
-    public TaskServiceImpl(TaskRepository taskRepository, UserRepository userRepository, ReleaseRepository releaseRepository, ProjectRepository projectRepository, @Qualifier("taskMapperImpl") TaskMapper taskMapper) {
+    public TaskServiceImpl(TaskRepository taskRepository, UserRepository userRepository, ReleaseRepository releaseRepository, @Qualifier("taskMapperImpl") TaskMapper taskMapper) {
         this.taskRepository = taskRepository;
         this.userRepository = userRepository;
         this.releaseRepository = releaseRepository;
-        this.projectRepository = projectRepository;
         this.taskMapper = taskMapper;
     }
 
