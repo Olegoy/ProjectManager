@@ -26,6 +26,10 @@ public class UserRequestDto {
     @Schema(description = "Роли пользователя")
     private Set<Role> roles;
 
+    public UserRequestDto(Long id) {
+        this.id = id;
+    }
+
     public UserRequestDto(Long id, String firstName, String lastName, String login, String password, Set<Role> roles) {
         this.id = id;
         this.firstName = firstName;

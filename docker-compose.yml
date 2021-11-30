@@ -1,0 +1,46 @@
+version: '3.1'
+
+services:
+
+  pm-db:
+    container_name: pm-db
+
+    image: postgres:12.7
+    restart: always
+    volumes:
+      - pm-db-volume:/var/lib/postgresql/data
+      - ./dump:/home/postgres/dump
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=12345
+      - POSTGRES_DB=management_db
+    command: ["--autovacuum=off"]
+    ports:
+      - "127.0.0.1:5432:5432"
+
+  project-manager-zookeeper:
+    container_name: project-manager-zookeeper
+    image: bitnami/zookeeper:latest
+    ports:
+      - "2181:2181"
+    environment:
+      - ALLOW_ANONYMOUS_LOGIN=yes
+
+
+  project-manager-kafka:
+    container_name: project-manager-kafka
+    image: bitnami/kafka:latest
+    ports:
+      - "9092:9092"
+    environment:
+      - KAFKA_BROKER_ID=1
+      - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://127.0.0.1:9092
+      - KAFKA_CFG_ZOOKEEPER_CONNECT=project-manager-zookeeper:2181
+      - ALLOW_PLAINTEXT_LISTENER=yes
+    depends_on:
+      - project-manager-zookeeper
+
+volumes:
+  pm-db-volume:
+    external: true

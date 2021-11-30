@@ -1,6 +1,8 @@
 package com.example.yashkin.model;
 
-public enum TaskStatus {
+import java.io.Serializable;
+
+public enum TaskStatus implements Serializable {
     BACKLOG,
     IN_PROGRESS,
     DONE;

@@ -18,6 +18,15 @@ public class ProjectRequestDto {
     @Schema(description = "Статус проекта")
     private ProjectStatus status;
 
+    public ProjectRequestDto(Long id) {
+        this.id = id;
+    }
+
+    public ProjectRequestDto(Long id, String projectName) {
+        this.id = id;
+        this.projectName = projectName;
+    }
+
     public ProjectRequestDto(Long id, String projectName, UserRequestDto customer, ProjectStatus status) {
         this.id = id;
         this.projectName = projectName;

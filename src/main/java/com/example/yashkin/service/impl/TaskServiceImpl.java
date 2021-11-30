@@ -7,11 +7,15 @@ import com.example.yashkin.model.TaskStatus;
 import com.example.yashkin.repository.ReleaseRepository;
 import com.example.yashkin.repository.TaskRepository;
 import com.example.yashkin.repository.UserRepository;
+import com.example.yashkin.rest.dto.ProjectRequestDto;
+import com.example.yashkin.rest.dto.ReleaseRequestDto;
 import com.example.yashkin.rest.dto.TaskRequestDto;
 import com.example.yashkin.rest.dto.TaskResponseDto;
-
+import com.example.yashkin.rest.dto.UserRequestDto;
 import com.example.yashkin.service.TaskService;
+import com.example.yashkin.utils.Translator;
 import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,9 +25,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.criteria.Predicate;
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -31,7 +35,7 @@ import java.util.stream.Collectors;
 @Service
 public class TaskServiceImpl implements TaskService {
 
-    private static Logger log = LoggerFactory.getLogger(TaskServiceImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(TaskServiceImpl.class);
 
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
@@ -96,9 +100,9 @@ public class TaskServiceImpl implements TaskService {
 
     @Transactional
     @Override
-    public TaskResponseDto getById(Long id) throws NullPointerException {
+    public TaskResponseDto getById(Long id) {
         TaskEntity taskEntity = taskRepository.findById(id).orElseThrow(
-                () -> new NotFoundException(String.format("Task with ID = %d not found", id))
+                () -> new NotFoundException(String.format(Translator.toLocale("task.exception.not_found_by_id"), id))
         );
 
         TaskResponseDto responseDto = taskMapper.taskResponseDtoFromTaskEntity(taskEntity);
@@ -109,8 +113,12 @@ public class TaskServiceImpl implements TaskService {
 
     @Transactional
     @Override
-    public TaskResponseDto addTask(TaskRequestDto taskRequestDto) {
-        TaskEntity entity = taskMapper.taskEntityFromTaskRequestDto(taskRequestDto);
+    public TaskResponseDto addTask(TaskRequestDto requestDto) {
+
+        log.info("Start task add");
+
+        TaskEntity entity = taskMapper.taskEntityFromTaskRequestDto(requestDto);
+
         taskRepository.save(entity);
         TaskResponseDto responseDto = taskMapper.taskResponseDtoFromTaskEntity(entity);
         log.info("task added");
@@ -120,9 +128,10 @@ public class TaskServiceImpl implements TaskService {
 
     @Transactional
     @Override
-    public TaskResponseDto updateTask(Long id, TaskRequestDto taskRequestDto) throws NullPointerException {
+    public TaskResponseDto updateTask(Long id, TaskRequestDto taskRequestDto) {
+        log.info("Start task updated");
         TaskEntity entity = taskRepository.findById(id).orElseThrow(
-                () -> new NotFoundException(String.format("Task with ID = %d not found", id))
+                () -> new NotFoundException(String.format(Translator.toLocale("task.exception.not_found_by_id"), id))
         );
         entity.setName(taskRequestDto.getName());
         entity.setAuthor(taskMapper.taskEntityFromTaskRequestDto(taskRequestDto).getAuthor());
@@ -131,6 +140,7 @@ public class TaskServiceImpl implements TaskService {
         entity.setPriority(taskRequestDto.getPriority());
         entity.setType(taskRequestDto.getType());
         entity.setRelease(taskMapper.taskEntityFromTaskRequestDto(taskRequestDto).getRelease());
+        entity.setProjectId(taskMapper.taskEntityFromTaskRequestDto(taskRequestDto).getProjectId());
         TaskResponseDto responseDto = taskMapper.taskResponseDtoFromTaskEntity(entity);
         log.info("task updated");
         return responseDto;
@@ -138,9 +148,9 @@ public class TaskServiceImpl implements TaskService {
 
     @Transactional
     @Override
-    public TaskResponseDto deleteTask(Long id) throws NullPointerException {
+    public TaskResponseDto deleteTask(Long id) {
         TaskEntity entity = taskRepository.findById(id).orElseThrow(
-                () -> new NotFoundException(String.format("Task with ID = %d not found", id))
+                () -> new NotFoundException(String.format(Translator.toLocale("task.exception.not_found_by_id"), id))
         );
         taskRepository.delete(entity);
         TaskResponseDto responseDto = taskMapper.taskResponseDtoFromTaskEntity(entity);
@@ -191,7 +201,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public TaskResponseDto setStatusTask(Long id, TaskStatus status) {
         TaskEntity entity = taskRepository.findById(id).orElseThrow(
-                () -> new NotFoundException(String.format("Task with ID = %d not found", id))
+                () -> new NotFoundException(String.format(Translator.toLocale("task.exception.not_found_by_id"), id))
         );
 
         entity.setStatus(status);
@@ -205,7 +215,7 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public TaskResponseDto setReleaseTask(Long id, Long releaseId) {
         TaskEntity entity = taskRepository.findById(id).orElseThrow(
-                () -> new NotFoundException(String.format("Task with ID = %d not found", id))
+                () -> new NotFoundException(String.format(Translator.toLocale("task.exception.not_found_by_id"), id))
         );
         entity.setRelease(releaseRepository.getById(releaseId));
         TaskResponseDto responseDto = taskMapper.taskResponseDtoFromTaskEntity(entity);
@@ -215,35 +225,45 @@ public class TaskServiceImpl implements TaskService {
 
     @Transactional
     @Override
-    public TaskResponseDto createFromFile(MultipartFile multipartFile) throws IOException {
-        TaskResponseDto taskResponseDto = new TaskResponseDto();
-        try {
-            Path tempFile = Files.createTempFile(null, "tmp");
-            multipartFile.transferTo(tempFile);
-            Iterable<CSVRecord> records = CSVFormat.DEFAULT.parse(Files.newBufferedReader(tempFile));
-            for(CSVRecord record: records) {
-                TaskEntity taskEntity = new TaskEntity();
-                taskEntity.setName(record.get("Name"));
-                taskEntity.setType(record.get("Type"));
-                taskEntity.setPriority(Integer.parseInt(record.get("Priority")));
-                taskEntity.setAuthor(userRepository.getById(Long.parseLong(record.get("Author"))));
-                taskEntity.setExecutor(userRepository.getById(Long.parseLong(record.get("Executor"))));
-                taskResponseDto = taskMapper.taskResponseDtoFromTaskEntity(taskEntity);
-                taskRepository.save(taskEntity);
-                log.info("task added");
-            }
+    public List<TaskResponseDto> createFromFile(MultipartFile multipartFile) {
+
+        List<TaskResponseDto> tasks = new ArrayList<>();
+        log.info("multipartFile" + multipartFile.getName());
+        try (
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(multipartFile.getInputStream(), "UTF-8"));
+            CSVParser parser = new CSVParser(bufferedReader, CSVFormat.DEFAULT.withFirstRecordAsHeader().withTrim()))
+            {
+                Iterable<CSVRecord> records = parser.getRecords();
+                for (CSVRecord record : records) {
+
+                    TaskRequestDto requestDto = new TaskRequestDto();
+                    requestDto.setId(Long.parseLong(record.get("id")));
+                    requestDto.setName(record.get("Name"));
+                    requestDto.setAuthor(new UserRequestDto(Long.parseLong(record.get("Author"))));
+                    if (!record.get("Executor").isEmpty()) {
+                        requestDto.setExecutor(new UserRequestDto(Long.parseLong(record.get("Executor"))));
+                    }
+                    requestDto.setType(record.get("Type"));
+                    requestDto.setStatus(TaskStatus.valueOf(record.get("Status")));
+                    requestDto.setPriority(Integer.parseInt(record.get("Priority")));
+                    requestDto.setProjectId(new ProjectRequestDto(Long.parseLong(record.get("ProjectId"))));
+                    requestDto.setRelease(new ReleaseRequestDto(Long.parseLong(record.get("Release"))));
+                    tasks.add(addTask(requestDto));
+
+                    log.info("tasks sent to add");
+                }
+
         } catch (IOException e) {
             log.error("The task did not create!");
-            throw new IOException();
         }
-        return taskResponseDto;
+        return tasks;
     }
 
     @Transactional
     @Override
     public TaskResponseDto setExecutorTask(Long id, Long userId) {
         TaskEntity entity = taskRepository.findById(id).orElseThrow(
-                () -> new NotFoundException(String.format("Task with ID = %d not found", id))
+                () -> new NotFoundException(String.format(Translator.toLocale("task.exception.not_found_by_id"), id))
         );
         entity.setExecutor(userRepository.getById(userId));
         TaskResponseDto responseDto = taskMapper.taskResponseDtoFromTaskEntity(entity);

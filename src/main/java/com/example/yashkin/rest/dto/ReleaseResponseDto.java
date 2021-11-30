@@ -1,8 +1,10 @@
 package com.example.yashkin.rest.dto;
 
+import com.example.yashkin.entity.TaskEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Schema(description = "Релиз")
 public class ReleaseResponseDto {
@@ -30,7 +32,8 @@ public class ReleaseResponseDto {
         this.version = version;
     }
 
-    public ReleaseResponseDto(Integer version, LocalDateTime dateStart, LocalDateTime dateEnd) {
+    public ReleaseResponseDto(Long id, Integer version, LocalDateTime dateStart, LocalDateTime dateEnd) {
+        this.id = id;
         this.version = version;
         this.dateStart = dateStart;
         this.dateEnd = dateEnd;
@@ -67,4 +70,5 @@ public class ReleaseResponseDto {
     public void setDateEnd(LocalDateTime dateEnd) {
         this.dateEnd = dateEnd;
     }
+
 }

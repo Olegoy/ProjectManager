@@ -3,11 +3,19 @@ package com.example.yashkin.service;
 import com.example.yashkin.rest.dto.ReleaseRequestDto;
 import com.example.yashkin.rest.dto.ReleaseResponseDto;
 
+import java.util.List;
+
 /**
  * Interface with methods for release management
  * @author Oleg Yaskin
  */
 public interface ReleaseService {
+
+    /**
+     * Method for get all exist release from a database
+     * @return List<ReleaseResponseDto>
+     */
+    public List<ReleaseResponseDto> getAllRelease();
 
     /**
      * Method for getting a release from the database by ID

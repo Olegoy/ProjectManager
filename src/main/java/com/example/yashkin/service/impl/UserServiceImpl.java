@@ -7,6 +7,7 @@ import com.example.yashkin.repository.UserRepository;
 import com.example.yashkin.rest.dto.UserRequestDto;
 import com.example.yashkin.rest.dto.UserResponseDto;
 import com.example.yashkin.service.UserService;
+import com.example.yashkin.utils.Translator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -20,7 +21,7 @@ import java.util.stream.Collectors;
 @Service
 public class UserServiceImpl implements UserService {
 
-    private static Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
+    private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
@@ -49,7 +50,7 @@ public class UserServiceImpl implements UserService {
     public UserResponseDto getById(Long id) throws NullPointerException {
 
         UserEntity userEntity = userRepository.findById(id).orElseThrow(
-                () -> new NotFoundException(String.format("User with ID = %d not found", id))
+                () -> new NotFoundException(String.format(Translator.toLocale("user.exception.not_found_by_id"), id))
         );
 
         UserResponseDto responseDto = userMapper.userResponseDtoFromUserEntity(userEntity);
@@ -79,7 +80,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponseDto updateUser(Long id, UserRequestDto userRequestDto) throws NullPointerException {
         UserEntity entity = userRepository.findById(id).orElseThrow(
-                () -> new NotFoundException(String.format("User with ID = %d not found", id))
+                () -> new NotFoundException(String.format(Translator.toLocale("user.exception.not_found_by_id"), id))
         );
         entity.setFirstName(userRequestDto.getFirstName());
         entity.setLastName(userRequestDto.getLastName());
@@ -96,7 +97,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponseDto deleteUser(Long id) throws NullPointerException {
         UserEntity entity = userRepository.findById(id).orElseThrow(
-                () -> new NotFoundException(String.format("User with ID = %d not found", id))
+                () -> new NotFoundException(String.format(Translator.toLocale("user.exception.not_found_by_id"), id))
         );
         userRepository.delete(entity);
         UserResponseDto responseDto = userMapper.userResponseDtoFromUserEntity(entity);
