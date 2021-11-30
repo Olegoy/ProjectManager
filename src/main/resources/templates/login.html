@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Login Custom</title>
+</head>
+<body>
+<h1>Login Page</h1>
+<div class="container">
+    <form class="form-signin" method="post" action="/auth/login">
+        <h2 class="form-signing-heading">Login</h2>
+        <p>
+            <label for="login">Username</label>
+            <input type="text" id="login" name="login" class="form-control" placeholder="Login" required>
+        </p>
+        <p>
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" class="form-control" placeholder="Password" required>
+        </p>
+        <button class="btn btn-lg btn-primary btn-block" type="Submint">Sign in</button>
+    </form>
+</div>
+<!--<form name='f' action="login" method='POST'>
+    <table>
+        <tr>
+            <td>User:</td>
+            <td><input type='text' name='username' value=''></td>
+        </tr>
+        <tr>
+            <td>Password:</td>
+            <td><input type='password' name='password' /></td>
+        </tr>
+        <tr>
+            <td><input name="submit" type="submit" value="submit" /></td>
+        </tr>
+    </table>
+</form>-->
+</body>
+</html>
