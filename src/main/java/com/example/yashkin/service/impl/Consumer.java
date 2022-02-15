@@ -8,7 +8,10 @@ import java.io.IOException;
 @Service
 public class Consumer {
 
-    @KafkaListener(topics = "users", groupId = "group_id")
+    private static final String TOPIC = "user_message";
+    private static final String TOPIC_USERS = "user_message";
+
+    @KafkaListener(topics = {TOPIC, TOPIC_USERS}, groupId = "group_id")
     public void consume(String message) throws IOException {
         System.out.println("Consumed message = " + message);
 

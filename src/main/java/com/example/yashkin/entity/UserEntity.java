@@ -1,6 +1,11 @@
 package com.example.yashkin.entity;
 
 import com.example.yashkin.model.Role;
+import lombok.Data;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
+import org.springframework.data.mongodb.core.mapping.MongoId;
 
 import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
@@ -18,23 +23,30 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import java.util.Set;
 
+@Document(collection = "Users")
 @Entity
+@Data
 @Table(name = "users")
 public class UserEntity {
 
+    @Indexed(unique = true)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Field(value = "first_name")
     @Column(name = "first_name")
     private String firstName;
 
+    @Field(value = "last_name")
     @Column(name = "last_name")
     private String lastName;
 
+    @Field(value = "login")
     @Column(nullable = false, unique = true)
     private String login;
 
+    @Field(value = "password")
     @Column(nullable = true)
     private String password;
 

@@ -26,5 +26,7 @@ For run this app:
 For access to API:
 - create user: admin, adminov, admin, admin (notice: insert encrypt of admin into db)
 and role: 1, ADMIN
-> you can execute admin.sql;
-- go to localhost:8080/swagger-ui.html and sign with admin, admin
+> you can execute data.sql;
+- go to localhost:8081/swagger-ui.html and sign with admin, admin
+- postman/insomnia: /auth/login enter login/password, get token, 
+then go to needed url and use header: Authorization, value: token without quotes. 

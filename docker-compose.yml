@@ -1,6 +1,14 @@
 version: '3.1'
 
 services:
+#  application:
+#    image: pm:latest
+#    restart: always
+#    container_name: pm
+#    ports:
+#      - "8081:8081"
+#    depends_on:
+#      - pm-db
 
   pm-db:
     container_name: pm-db
@@ -41,6 +49,21 @@ services:
     depends_on:
       - project-manager-zookeeper
 
+  mongo:
+    image: mongo
+    ports:
+      - "27017:27017"
+    restart: always
+    volumes:
+      - pm-mongodb-volume:/var/lib/mongodb/data
+      - ./dump:/home/mongodb/dump
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: mongo
+      MONGO_INITDB_ROOT_PASSWORD: 12345
+
 volumes:
   pm-db-volume:
+    external: true
+
+  pm-mongodb-volume:
     external: true
