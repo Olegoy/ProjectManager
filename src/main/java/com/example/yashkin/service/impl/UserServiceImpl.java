@@ -3,6 +3,7 @@ package com.example.yashkin.service.impl;
 import com.example.yashkin.entity.UserEntity;
 import com.example.yashkin.exception.NotFoundException;
 import com.example.yashkin.mappers.UserMapper;
+import com.example.yashkin.mongo.UserMongoRepository;
 import com.example.yashkin.repository.UserRepository;
 import com.example.yashkin.rest.dto.UserRequestDto;
 import com.example.yashkin.rest.dto.UserResponseDto;
@@ -10,6 +11,7 @@ import com.example.yashkin.service.UserService;
 import com.example.yashkin.utils.Translator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -26,11 +28,14 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
+    @Autowired
+    private final UserMongoRepository userMongoRepository;
 
-    public UserServiceImpl(UserRepository userRepository, @Qualifier("userMapperImpl") UserMapper userMapper, PasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserRepository userRepository, @Qualifier("userMapperImpl") UserMapper userMapper, PasswordEncoder passwordEncoder, UserMongoRepository userMongoRepository) {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
         this.passwordEncoder = passwordEncoder;
+        this.userMongoRepository = userMongoRepository;
     }
 
     @Transactional
@@ -52,6 +57,11 @@ public class UserServiceImpl implements UserService {
         UserEntity userEntity = userRepository.findById(id).orElseThrow(
                 () -> new NotFoundException(String.format(Translator.toLocale("user.exception.not_found_by_id"), id))
         );
+        if (!userMongoRepository.existsById(userEntity.getId())) {
+            userMongoRepository.insert(userEntity);
+        }
+        System.out.println("FROM_MONGO: Name = " + userMongoRepository.findById(userEntity.getId()).get().getFirstName());
+        System.out.println("FROM_MONGO: ID = " + userMongoRepository.findById(userEntity.getId()).get().getId());
 
         UserResponseDto responseDto = userMapper.userResponseDtoFromUserEntity(userEntity);
         log.info("user got by id");

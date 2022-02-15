@@ -3,6 +3,7 @@ package com.example.yashkin.service.impl;
 import com.example.yashkin.entity.UserEntity;
 import com.example.yashkin.mappers.UserMapper;
 import com.example.yashkin.model.Role;
+import com.example.yashkin.mongo.UserMongoRepository;
 import com.example.yashkin.repository.UserRepository;
 import com.example.yashkin.rest.dto.UserRequestDto;
 import com.example.yashkin.rest.dto.UserResponseDto;
@@ -36,6 +37,7 @@ public class UserServiceImplTest {
 
     @Mock
     private UserRepository userRepository;
+    private UserMongoRepository userMongoRepository;
 
     @InjectMocks
     UserServiceImpl userService;
@@ -79,7 +81,7 @@ public class UserServiceImplTest {
 
             }
         };
-        userService = new UserServiceImpl(userRepository, userMapper, passwordEncoder);
+        userService = new UserServiceImpl(userRepository, userMapper, passwordEncoder, userMongoRepository);
     }
 
     @Test
