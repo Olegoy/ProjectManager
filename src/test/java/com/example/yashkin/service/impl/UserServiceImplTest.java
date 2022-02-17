@@ -37,6 +37,7 @@ public class UserServiceImplTest {
 
     @Mock
     private UserRepository userRepository;
+    @Mock
     private UserMongoRepository userMongoRepository;
 
     @InjectMocks
@@ -108,7 +109,6 @@ public class UserServiceImplTest {
         UserRequestDto requestDto = new UserRequestDto(ID, USER_FIRST_NAME, USER_LAST_NAME, USER_LOGIN, USER_PASSWORD, Set.of(Role.USER));
 
         Mockito.when(userRepository.findById(Mockito.any())).thenReturn(Optional.of(expected));
-
         userService.addUser(requestDto);
 
         UserResponseDto actual = userService.getById(ID);

@@ -79,6 +79,7 @@ public class UserServiceImpl implements UserService {
         entity.setId(null);
         entity.setPassword(passwordEncoder.encode(userRequestDto.getPassword()));
         userRepository.save(entity);
+        userMongoRepository.save(entity);
 
         UserResponseDto responseDto = userMapper.userResponseDtoFromUserEntity(entity);
         log.info("user added");
