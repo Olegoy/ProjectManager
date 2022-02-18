@@ -7,6 +7,7 @@ services:
     container_name: project-manager2
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://pm-db:5432/management_db
+      - KAFKA_BOOTSTRAP_SERVERS_HOST=192.168.3.7
     ports:
       - "8081:8081"
     depends_on:
