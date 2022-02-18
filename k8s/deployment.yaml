@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: project-manager2
+  labels:
+    app: project-manager2
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: project-manager2
+  template:
+    metadata:
+      labels:
+        app: project-manager2
+    spec:
+      containers:
+        - name: project-manager2
+          image: olegoy/docker-repo:project-manager2
+          ports:
+            - containerPort: 8081
+          env:
+            - name: DATASOURCE_HOST
+              value: 192.168.3.7
+            - name: spring.mvc.servlet.path
+              value: project-manager2

@@ -1,3 +1,3 @@
 mvn clean install -DskipTests
-docker rmi pm
-docker build ./  -t pm
+docker rmi project-manager2
+docker build ./  -t project-manager2

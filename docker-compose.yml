@@ -1,19 +1,19 @@
 version: '3.1'
 
 services:
-#  application:
-#    image: pm:latest
-#    restart: always
-#    container_name: pm
-#    environment:
-#      - SPRING_DATASOURCE_URL=jdbc:postgresql://pm-db:5432/management_db
-#    ports:
-#      - "8081:8081"
-#    depends_on:
-#      - pm-db
-#      - project-manager-zookeeper
-#      - mongo
-#      - project-manager-kafka
+  application:
+    image: project-manager2
+    restart: always
+    container_name: project-manager2
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://pm-db:5432/management_db
+    ports:
+      - "8081:8081"
+    depends_on:
+      - pm-db
+      - project-manager-zookeeper
+      - mongo
+      - project-manager-kafka
 
   pm-db:
     container_name: pm-db
