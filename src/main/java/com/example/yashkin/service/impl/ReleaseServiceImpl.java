@@ -63,14 +63,14 @@ public class ReleaseServiceImpl implements ReleaseService {
     public ReleaseResponseDto addRelease(ReleaseRequestDto releaseRequestDto) {
 
         ReleaseEntity entity = releaseMapper.releaseEntityFromReleaseRequestDto(releaseRequestDto);
-      //  entity.setId(null);
+        //  entity.setId(null);
         entity.setDateStart(LocalDateTime.now());
         entity.setDateEnd(null);
         releaseRepository.save(entity);
 
         ReleaseResponseDto responseDto = releaseMapper.releaseResponseDtoFromReleaseEntity(entity);
         log.info("release added");
-        return  responseDto;
+        return responseDto;
 
     }
 

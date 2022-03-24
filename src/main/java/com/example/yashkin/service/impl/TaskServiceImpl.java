@@ -93,8 +93,8 @@ public class TaskServiceImpl implements TaskService {
         });
 
         return filteredTasks.stream()
-              .map(taskMapper::taskResponseDtoFromTaskEntity)
-              .collect(Collectors.toList());
+                .map(taskMapper::taskResponseDtoFromTaskEntity)
+                .collect(Collectors.toList());
 
     }
 
@@ -230,28 +230,27 @@ public class TaskServiceImpl implements TaskService {
         List<TaskResponseDto> tasks = new ArrayList<>();
         log.info("multipartFile" + multipartFile.getName());
         try (
-            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(multipartFile.getInputStream(), "UTF-8"));
-            CSVParser parser = new CSVParser(bufferedReader, CSVFormat.DEFAULT.withFirstRecordAsHeader().withTrim()))
-            {
-                Iterable<CSVRecord> records = parser.getRecords();
-                for (CSVRecord record : records) {
+                BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(multipartFile.getInputStream(), "UTF-8"));
+                CSVParser parser = new CSVParser(bufferedReader, CSVFormat.DEFAULT.withFirstRecordAsHeader().withTrim())) {
+            Iterable<CSVRecord> records = parser.getRecords();
+            for (CSVRecord record : records) {
 
-                    TaskRequestDto requestDto = new TaskRequestDto();
-                    requestDto.setId(Long.parseLong(record.get("id")));
-                    requestDto.setName(record.get("Name"));
-                    requestDto.setAuthor(new UserRequestDto(Long.parseLong(record.get("Author"))));
-                    if (!record.get("Executor").isEmpty()) {
-                        requestDto.setExecutor(new UserRequestDto(Long.parseLong(record.get("Executor"))));
-                    }
-                    requestDto.setType(record.get("Type"));
-                    requestDto.setStatus(TaskStatus.valueOf(record.get("Status")));
-                    requestDto.setPriority(Integer.parseInt(record.get("Priority")));
-                    requestDto.setProjectId(new ProjectRequestDto(Long.parseLong(record.get("ProjectId"))));
-                    requestDto.setRelease(new ReleaseRequestDto(Long.parseLong(record.get("Release"))));
-                    tasks.add(addTask(requestDto));
-
-                    log.info("tasks sent to add");
+                TaskRequestDto requestDto = new TaskRequestDto();
+                requestDto.setId(Long.parseLong(record.get("id")));
+                requestDto.setName(record.get("Name"));
+                requestDto.setAuthor(new UserRequestDto(Long.parseLong(record.get("Author"))));
+                if (!record.get("Executor").isEmpty()) {
+                    requestDto.setExecutor(new UserRequestDto(Long.parseLong(record.get("Executor"))));
                 }
+                requestDto.setType(record.get("Type"));
+                requestDto.setStatus(TaskStatus.valueOf(record.get("Status")));
+                requestDto.setPriority(Integer.parseInt(record.get("Priority")));
+                requestDto.setProjectId(new ProjectRequestDto(Long.parseLong(record.get("ProjectId"))));
+                requestDto.setRelease(new ReleaseRequestDto(Long.parseLong(record.get("Release"))));
+                tasks.add(addTask(requestDto));
+
+                log.info("tasks sent to add");
+            }
 
         } catch (IOException e) {
             log.error("The task did not create!");

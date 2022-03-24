@@ -39,7 +39,7 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public List<ProjectResponseDto> getAllProjects() {
 
-         List<ProjectEntity> allProjectsEntity = projectRepository.findAll();
+        List<ProjectEntity> allProjectsEntity = projectRepository.findAll();
         List<ProjectResponseDto> allProjects = allProjectsEntity.stream()
                 .map(projectMapper::projectResponseDtoFromProjectEntity)
                 .collect(Collectors.toList());
@@ -71,12 +71,10 @@ public class ProjectServiceImpl implements ProjectService {
             ProjectResponseDto projectResponseDto = projectMapper.projectResponseDtoFromProjectEntity(entity);
             log.info("project added");
             return projectResponseDto;
-        }
-        else {
+        } else {
             log.error("Project did not create! It didn't pay!");
             throw new NotFoundException(Translator.toLocale("project.exception.not_found_not_paid"));
         }
-        //return entity;
     }
 
     @Transactional

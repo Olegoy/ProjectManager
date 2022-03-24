@@ -109,8 +109,8 @@ public class UserServiceImpl implements UserService {
 
     }
 
-    @Caching(evict = { @CacheEvict(cacheNames = "users", key = "#id"),
-            @CacheEvict(cacheNames = "users", allEntries = true) })
+    @Caching(evict = {@CacheEvict(cacheNames = "users", key = "#id"),
+            @CacheEvict(cacheNames = "users", allEntries = true)})
     @Transactional
     @Override
     public UserResponseDto deleteUser(Long id) {
@@ -121,6 +121,5 @@ public class UserServiceImpl implements UserService {
         UserResponseDto responseDto = userMapper.userResponseDtoFromUserEntity(entity);
         log.info("user deleted");
         return responseDto;
-
     }
 }

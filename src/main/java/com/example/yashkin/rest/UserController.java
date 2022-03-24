@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -43,19 +42,21 @@ public class UserController {
         this.producer = producer;
     }
 
-    @Operation(summary = "Получить список пользователей", security = { @SecurityRequirement(name = "Authorization") })
+    @Operation(summary = "Получить список пользователей", security = {@SecurityRequirement(name = "Authorization")})
     @GetMapping("/")
     @PreAuthorize("hasAuthority('users:read')")
     public ResponseEntity<List<UserResponseDto>> getUsers() {
         long startTime = System.currentTimeMillis();
         List<UserResponseDto> results = userService.getUsers();
-        producer.sendMessageFromService("got AllUsers" + results.stream().map(s -> (s.getFirstName() + " " + s.getLastName())).collect(Collectors.toSet()));
+        producer.sendMessageFromService("got AllUsers" + results.stream()
+                .map(s -> (s.getFirstName() + " " + s.getLastName()))
+                .collect(Collectors.toSet()));
         long endTime = System.currentTimeMillis() - startTime;
         log.info("Duration = {}", endTime);
         return ResponseEntity.ok().body(results);
     }
 
-    @Operation(summary = "Получить пользователя по id", security = { @SecurityRequirement(name = "Authorization") })
+    @Operation(summary = "Получить пользователя по id", security = {@SecurityRequirement(name = "Authorization")})
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('users:read')")
     public ResponseEntity<UserResponseDto> getUserById(@PathVariable Long id) {
@@ -67,37 +68,34 @@ public class UserController {
         return ResponseEntity.ok().body(responseDto);
     }
 
-    @Operation(summary = "Добавить пользователя", security = { @SecurityRequirement(name = "Authorization") })
+    @Operation(summary = "Добавить пользователя", security = {@SecurityRequirement(name = "Authorization")})
     @PostMapping("/")
     @PreAuthorize("hasAuthority('users:write')")
     public ResponseEntity<UserResponseDto> addUser(@RequestBody UserRequestDto requestDto) {
         // добавление в БД
 
         UserResponseDto responseDto = userService.addUser(requestDto);
-
         return ResponseEntity.ok().body(responseDto);
     }
 
-    @Operation(summary = "Обновление пользователя", security = { @SecurityRequirement(name = "Authorization") })
+    @Operation(summary = "Обновление пользователя", security = {@SecurityRequirement(name = "Authorization")})
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('users:write')")
     public ResponseEntity<UserResponseDto> updateUser(@PathVariable Long id,
-                                                             @RequestBody UserRequestDto requestDto) throws IOException {
+                                                      @RequestBody UserRequestDto requestDto) {
         // обновление сущности в БД
         UserResponseDto responseDto = userService.updateUser(id, requestDto);
-
         return ResponseEntity.ok().body(responseDto);
     }
 
-    @Operation(summary = "Удаление пользователя", security = { @SecurityRequirement(name = "Authorization") })
+    @Operation(summary = "Удаление пользователя", security = {@SecurityRequirement(name = "Authorization")})
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('users:write')")
     public ResponseEntity<String> deleteUser(@PathVariable Long id) {
         // удаление сущности из БД
         UserResponseDto responseDto = userService.deleteUser(id);
-
         return new ResponseEntity<>(
-                String.format("Пользователь с id #%d успешно удален", id),
+                String.format("Пользователь с id #%d успешно удален", responseDto.getId()),
                 HttpStatus.OK
         );
     }
