@@ -1,19 +1,17 @@
 package com.example.yashkin.rest;
 
-import com.example.yashkin.entity.TaskEntity;
-import com.example.yashkin.entity.UserEntity;
 import com.example.yashkin.model.TaskStatus;
 import com.example.yashkin.rest.dto.TaskRequestDto;
 import com.example.yashkin.rest.dto.TaskResponseDto;
 import com.example.yashkin.service.TaskService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -25,7 +23,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 
 @Tag(name = "Задача", description = "CRUD задач")
@@ -39,7 +36,7 @@ public class TaskController {
         this.taskService = taskService;
     }
 
-    @Operation(summary = "Получить список задач")
+    @Operation(summary = "Получить список задач", security = {@SecurityRequirement(name = "Authorization")})
     @GetMapping("/")
     @PreAuthorize("hasAuthority('users:read')")
     public ResponseEntity<List<TaskResponseDto>> getAllTasks() {
@@ -47,23 +44,23 @@ public class TaskController {
         return ResponseEntity.ok().body(allTasks);
     }
 
-    @Operation(summary = "Найти задачу по критерию")
+    @Operation(summary = "Найти задачу по критерию", security = {@SecurityRequirement(name = "Authorization")})
     @GetMapping("/filter/")
     @PreAuthorize("hasAuthority('users:read')")
     public ResponseEntity<List<TaskResponseDto>> findTasksByFilter(@Parameter(description = "Название задачи")
-                                                                 @RequestParam(required = false) String name,
-                                                             @Parameter(description = "Тип задачи")
-                                                                 @RequestParam(required = false) String type,
-                                                             @Parameter(description = "Статус задачи")
-                                                                 @RequestParam(required = false) TaskStatus status,
-                                                             @Parameter(description = "Имя проекта")
-                                                                 @RequestParam(required = false) String projectName,
-                                                             @Parameter(description = "Версия релиза")
-                                                                 @RequestParam(required = false) String releaseVersion,
-                                                             @Parameter(description = "Автор задачи")
-                                                                 @RequestParam(required = false) String authorName,
-                                                             @Parameter(description = "Исполнитель задачи")
-                                                                 @RequestParam(required = false) String executorName) {
+                                                                   @RequestParam(required = false) String name,
+                                                                   @Parameter(description = "Тип задачи")
+                                                                   @RequestParam(required = false) String type,
+                                                                   @Parameter(description = "Статус задачи")
+                                                                   @RequestParam(required = false) TaskStatus status,
+                                                                   @Parameter(description = "Имя проекта")
+                                                                   @RequestParam(required = false) String projectName,
+                                                                   @Parameter(description = "Версия релиза")
+                                                                   @RequestParam(required = false) String releaseVersion,
+                                                                   @Parameter(description = "Автор задачи")
+                                                                   @RequestParam(required = false) String authorName,
+                                                                   @Parameter(description = "Исполнитель задачи")
+                                                                   @RequestParam(required = false) String executorName) {
 
         List<TaskResponseDto> allTasks = taskService.findTasksByFilter(name, type, status, projectName,
                 releaseVersion, authorName, executorName);
@@ -71,33 +68,23 @@ public class TaskController {
     }
 
 
-    @Operation(summary = "Получить количество незавершенных задач на данный релиз")
+    @Operation(summary = "Получить количество незавершенных задач на данный релиз", security = {@SecurityRequirement(name = "Authorization")})
     @GetMapping("/unfinished/release")
     @PreAuthorize("hasAuthority('users:read')")
     public ResponseEntity<Long> getCountUnfinishedTasksByRelease(Long releaseId) {
-        long count = 0L;
-        for (TaskResponseDto taskResponseDto : taskService.unfinishedTasksByRelease(releaseId)) {
-            count++;
-        }
-        Long countUnfinishedTasks = count;
-
+        Long countUnfinishedTasks = (long) taskService.unfinishedTasksByRelease(releaseId).size();
         return ResponseEntity.ok().body(countUnfinishedTasks);
     }
 
-    @Operation(summary = "Получить количество незавершенных задач проекта")
+    @Operation(summary = "Получить количество незавершенных задач проекта", security = {@SecurityRequirement(name = "Authorization")})
     @GetMapping("/unfinished/project")
     @PreAuthorize("hasAuthority('users:read')")
     public ResponseEntity<Long> getCountUnfinishedTasksByProject(Long projectId) {
-        long count = 0L;
-        for (TaskResponseDto taskResponseDto : taskService.unfinishedTasksByProjectId(projectId)) {
-            count++;
-        }
-        Long countUnfinishedTasks = count;
-
+        Long countUnfinishedTasks = (long) taskService.unfinishedTasksByProjectId(projectId).size();
         return ResponseEntity.ok().body(countUnfinishedTasks);
     }
 
-    @Operation(summary = "Получить задачу по id")
+    @Operation(summary = "Получить задачу по id", security = {@SecurityRequirement(name = "Authorization")})
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('users:read')")
     public ResponseEntity<TaskResponseDto> getTaskById(@PathVariable Long id) {
@@ -105,7 +92,7 @@ public class TaskController {
         return ResponseEntity.ok().body(responseDto);
     }
 
-    @Operation(summary = "Создать задачу из файла CSV")
+    @Operation(summary = "Создать задачу из файла CSV", security = {@SecurityRequirement(name = "Authorization")})
     @PostMapping("/csv/")
     @PreAuthorize("hasAuthority('users:write')")
     public ResponseEntity<List<TaskResponseDto>> createTaskFromCsv(@RequestParam("file") MultipartFile file) throws IOException {
@@ -113,28 +100,26 @@ public class TaskController {
         return ResponseEntity.ok().body(responseDto);
     }
 
-    @Operation(summary = "Добавить задачу")
+    @Operation(summary = "Добавить задачу", security = {@SecurityRequirement(name = "Authorization")})
     @PostMapping("/")
     @PreAuthorize("hasAuthority('users:write')")
     public ResponseEntity<TaskResponseDto> addTask(@RequestBody TaskRequestDto requestDto) {
         // добавление в БД
-
         TaskResponseDto responseDto = taskService.addTask(requestDto);
-
         return ResponseEntity.ok().body(responseDto);
     }
 
-    @Operation(summary = "Обновление задачи")
+    @Operation(summary = "Обновление задачи", security = {@SecurityRequirement(name = "Authorization")})
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('users:write')")
     public ResponseEntity<TaskResponseDto> updateTask(@PathVariable Long id,
-                                                             @RequestBody TaskRequestDto requestDto) throws IOException {
+                                                      @RequestBody TaskRequestDto requestDto) throws IOException {
         // обновление сущности в БД
         TaskResponseDto responseDto = taskService.updateTask(id, requestDto);
         return ResponseEntity.ok().body(responseDto);
     }
 
-    @Operation(summary = "Изменение статуса задачи")
+    @Operation(summary = "Изменение статуса задачи", security = {@SecurityRequirement(name = "Authorization")})
     @PutMapping("/{id}/status")
     @PreAuthorize("hasAuthority('users:write')")
     public ResponseEntity<TaskResponseDto> setStatusTask(@PathVariable Long id,
@@ -144,18 +129,17 @@ public class TaskController {
         return ResponseEntity.ok().body(responseDto);
     }
 
-    @Operation(summary = "Установка релиза задачи")
+    @Operation(summary = "Установка релиза задачи", security = {@SecurityRequirement(name = "Authorization")})
     @PutMapping("/{id}/release")
     @PreAuthorize("hasAuthority('users:write')")
     public ResponseEntity<TaskResponseDto> setReleaseTask(@PathVariable Long id,
                                                           @RequestBody Long releaseId) throws IOException {
         // обновление сущности в БД
         TaskResponseDto responseDto = taskService.setReleaseTask(id, releaseId);
-
         return ResponseEntity.ok().body(responseDto);
     }
 
-    @Operation(summary = "Установка исполнителя задачи")
+    @Operation(summary = "Установка исполнителя задачи", security = {@SecurityRequirement(name = "Authorization")})
     @PutMapping("/{id}/executor")
     @PreAuthorize("hasAuthority('users:write')")
     public ResponseEntity<TaskResponseDto> setExecutorTask(@PathVariable Long id,
@@ -165,22 +149,16 @@ public class TaskController {
         return ResponseEntity.ok().body(responseDto);
     }
 
-    @Operation(summary = "Удаление задачи")
+    @Operation(summary = "Удаление задачи", security = {@SecurityRequirement(name = "Authorization")})
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('users:write')")
     public ResponseEntity<String> deleteTask(@PathVariable Long id) {
         // удаление сущности из БД
         TaskResponseDto responseDto = taskService.deleteTask(id);
-
         return new ResponseEntity<>(
                 String.format("Задача с id #%d успешно удалена", id),
                 HttpStatus.OK
         );
     }
 
-    @ExceptionHandler(IOException.class)
-    public ResponseEntity handleException(IOException e) {
-        //
-        return new ResponseEntity(HttpStatus.BAD_REQUEST);
-    }
 }
