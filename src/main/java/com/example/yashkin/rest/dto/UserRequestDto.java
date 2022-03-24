@@ -1,6 +1,7 @@
 package com.example.yashkin.rest.dto;
 
 import com.example.yashkin.model.Role;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.util.Set;
@@ -8,6 +9,7 @@ import java.util.Set;
 @Schema(description = "Пользователь")
 public class UserRequestDto {
 
+    @JsonIgnore
     @Schema(description = "ID пользователя")
     private Long id;
 

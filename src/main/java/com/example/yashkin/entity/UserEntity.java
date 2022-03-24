@@ -1,6 +1,7 @@
 package com.example.yashkin.entity;
 
 import com.example.yashkin.model.Role;
+import lombok.Builder;
 import lombok.Data;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -26,6 +27,7 @@ import java.util.Set;
 @Document(collection = "Users")
 @Entity
 @Data
+@Builder
 @Table(name = "users")
 public class UserEntity {
 

@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.cache.annotation.*;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,6 +22,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@CacheConfig(cacheNames = "uc")
 public class UserServiceImpl implements UserService {
 
     private static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
@@ -38,6 +40,7 @@ public class UserServiceImpl implements UserService {
         this.userMongoRepository = userMongoRepository;
     }
 
+    @Cacheable(cacheNames = "users")
     @Transactional
     @Override
     public List<UserResponseDto> getUsers() {
@@ -45,14 +48,14 @@ public class UserServiceImpl implements UserService {
         List<UserResponseDto> allUsers = allUsersEntity.stream()
                 .map(userMapper::userResponseDtoFromUserEntity)
                 .collect(Collectors.toList());
-
         log.info("got all users");
         return allUsers;
     }
 
+    @Cacheable(cacheNames = "users", key = "#id")
     @Transactional
     @Override
-    public UserResponseDto getById(Long id) throws NullPointerException {
+    public UserResponseDto getById(Long id) {
 
         UserEntity userEntity = userRepository.findById(id).orElseThrow(
                 () -> new NotFoundException(String.format(Translator.toLocale("user.exception.not_found_by_id"), id))
@@ -69,6 +72,7 @@ public class UserServiceImpl implements UserService {
 
     }
 
+    @CacheEvict(cacheNames = "users", allEntries = true)
     @Transactional
     @Override
     public UserResponseDto addUser(UserRequestDto userRequestDto) {
@@ -87,9 +91,10 @@ public class UserServiceImpl implements UserService {
 
     }
 
+    @CacheEvict(cacheNames = "users", allEntries = true)
     @Transactional
     @Override
-    public UserResponseDto updateUser(Long id, UserRequestDto userRequestDto) throws NullPointerException {
+    public UserResponseDto updateUser(Long id, UserRequestDto userRequestDto) {
         UserEntity entity = userRepository.findById(id).orElseThrow(
                 () -> new NotFoundException(String.format(Translator.toLocale("user.exception.not_found_by_id"), id))
         );
@@ -104,9 +109,11 @@ public class UserServiceImpl implements UserService {
 
     }
 
+    @Caching(evict = { @CacheEvict(cacheNames = "users", key = "#id"),
+            @CacheEvict(cacheNames = "users", allEntries = true) })
     @Transactional
     @Override
-    public UserResponseDto deleteUser(Long id) throws NullPointerException {
+    public UserResponseDto deleteUser(Long id) {
         UserEntity entity = userRepository.findById(id).orElseThrow(
                 () -> new NotFoundException(String.format(Translator.toLocale("user.exception.not_found_by_id"), id))
         );

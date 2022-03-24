@@ -1,24 +1,44 @@
 package com.example.yashkin.rest;
 
+import com.example.yashkin.entity.UserEntity;
 import com.example.yashkin.model.Role;
+import com.example.yashkin.repository.UserRepository;
+import com.example.yashkin.rest.dto.AuthenticationRequestDto;
 import com.example.yashkin.rest.dto.UserResponseDto;
+import com.example.yashkin.security.JwtTokenProvider;
 import com.example.yashkin.service.impl.Producer;
 import com.example.yashkin.service.impl.UserServiceImpl;
 import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
 import org.hamcrest.Matchers;
+import org.junit.Before;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
+import java.security.Principal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -36,6 +56,16 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ExtendWith(SpringExtension.class)
 @SpringBootTest
 public class UserControllerTest {
+
+    @Configuration
+    @EnableGlobalMethodSecurity(prePostEnabled = true)
+    protected static class TestConfiguration {
+        @Bean
+        @Primary
+        public UserRepository gatUserRepository(){
+            return Mockito.mock(UserRepository.class);
+        }
+    }
 
     @AutoConfigureMockMvc(addFilters = false)
     @DisplayName("Get all users test")
@@ -68,14 +98,48 @@ public class UserControllerTest {
         @MockBean
         private Producer producer;
 
+        @MockBean
+        private AuthenticationRestControllerV1 authenticationRestControllerV1;
+
+        @Autowired
+        UserRepository userRepository;
+
+        @Autowired
+        JwtTokenProvider jwtTokenProvider;
+
+        Map<Object, Object> response = new HashMap<>();
+
+        @Before
+        void login() {
+
+//            AuthenticationRequestDto dto = new AuthenticationRequestDto("admin", "admin");
+//            UserEntity user = new UserEntity(0L, "admin", "adminov", "admin", "admin", Set.of(Role.ADMIN));
+//
+//            when(userRepository.getUserByLogin(dto.getLogin())).thenReturn(java.util.Optional.ofNullable(user));
+//            String token = jwtTokenProvider.createToken(dto.getLogin(), user.getRoles().stream().findFirst().get().name());
+//
+//
+//            response.put("login", dto.getLogin());
+//            response.put("token", token);
+//            final var result = authenticationRestControllerV1.authenticate(dto);
+
+            MockitoAnnotations.initMocks(this);
+        }
+
+        @WithMockUser(authorities={"users:write"})
         @AutoConfigureMockMvc(addFilters = false)
         @Test
-        void getUsers(@Autowired MockMvc mockMvc) throws Exception {
+         void getUsers(@Autowired MockMvc mockMvc) throws Exception {
+            AuthenticationRequestDto dto = new AuthenticationRequestDto("admin", "admin");
+            UserEntity user = new UserEntity(0L, "admin", "adminov", "admin", "admin", Set.of(Role.ADMIN));
+
+            when(userRepository.getUserByLogin(dto.getLogin())).thenReturn(java.util.Optional.ofNullable(user));
             when(userService.getUsers()).thenReturn(
                     List.of(new UserResponseDto(0L, "admin", "adminov", "admin", Set.of(Role.ADMIN))
                             , new UserResponseDto(1L, "user", "userov", "user", Set.of(Role.USER))));
 
-            mockMvc.perform(MockMvcRequestBuilders.get("http://localhost/api/yashkin/users/"))
+            mockMvc.perform(MockMvcRequestBuilders.get("http://localhost/api/yashkin/users/")
+                            .header("Authorization", response.get("token")))
                     .andExpect(status().isOk())
                     .andDo(print())
                     .andExpect(jsonPath("$", Matchers.hasSize(2)))

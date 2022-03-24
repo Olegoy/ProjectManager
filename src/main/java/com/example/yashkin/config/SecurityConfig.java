@@ -1,6 +1,9 @@
 package com.example.yashkin.config;
 
 import com.example.yashkin.security.JwtConfigurer;
+import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -30,14 +33,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
                 .authorizeRequests()
-                .antMatchers("/").permitAll()
                 .antMatchers(
                         "/open-api-docs/**",
-                        "/open-api-docs",
                         "/swagger-ui/**",
-                        "/swagger",
-                        "/swagger-ui.html").permitAll()
-                .antMatchers("/swagger-ui.html").permitAll()
+                        "/swagger").permitAll()
                 .antMatchers("/api/yashkin/auth/login").permitAll()
                 .anyRequest()
                 .authenticated()
@@ -58,4 +57,5 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     protected PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(12);
     }
+
 }

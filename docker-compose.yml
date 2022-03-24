@@ -8,12 +8,16 @@ services:
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://pm-db:5432/management_db
       - KAFKA_BOOTSTRAP_SERVERS_HOST=192.168.3.7
+      - MONGO_HOST=192.168.3.7
+      - REDIS_HOST=192.168.3.7
     ports:
       - "8081:8081"
     depends_on:
       - pm-db
       - project-manager-zookeeper
       - mongo
+      - redis
+      - redis-cache
       - project-manager-kafka
 
   pm-db:
@@ -48,7 +52,7 @@ services:
     environment:
       - KAFKA_BROKER_ID=1
       - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092
-      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://localhost:9092
+      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://192.168.3.7:9092
       - KAFKA_CFG_ZOOKEEPER_CONNECT=project-manager-zookeeper:2181
       - ALLOW_PLAINTEXT_LISTENER=yes
     depends_on:
@@ -65,6 +69,21 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: mongo
       MONGO_INITDB_ROOT_PASSWORD: 12345
+
+  redis:
+    container_name: redis
+    image: redis:6
+    ports:
+      - "6379:6379"
+    restart: always
+
+  redis-cache:
+    build: ./
+    ports:
+      - "8083:8081"
+    depends_on:
+      - "pm-db"
+      - "redis"
 
 volumes:
   pm-db-volume:
