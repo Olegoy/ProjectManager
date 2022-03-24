@@ -10,6 +10,7 @@ The following technologies were used in the development this program:
 - Mockito;
 - Apache CSV;
 - Swagger;
+- Lombok;
 - Open Feign;
 - Kafka;
 - Docker;
@@ -30,6 +31,5 @@ For access to API:
 - create user: admin, adminov, admin, admin (notice: insert encrypt of admin into db)
 and role: 1, ADMIN
 > you can execute data.sql;
-- go to localhost:8081/swagger-ui.html and sign with admin, admin
-- postman/insomnia/ or .../swagger: /auth/login enter login/password, get token, 
+- postman/insomnia/ or ...localhost:8081/swagger: /auth/login enter login/password (admin/admin), get token, 
 then go to needed url and use header: Authorization, value: token without quotes. 
