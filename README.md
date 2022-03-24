@@ -3,6 +3,8 @@ The following technologies were used in the development this program:
 - Spring Boot, Spring Web, Spring Security, Spring Data JPA, criteria API;
 - Liquibase;
 - PostgreSQL;
+- MongoDB;
+- Redis (cash);
 - Mapstruct;
 - JUnit;
 - Mockito;
@@ -10,7 +12,8 @@ The following technologies were used in the development this program:
 - Swagger;
 - Open Feign;
 - Kafka;
-- Docker.
+- Docker;
+- Kubernetes;
 
  The payment function is implemented in the AccountManager microservice (It is launched simultaneously with this service).
 
@@ -28,5 +31,5 @@ For access to API:
 and role: 1, ADMIN
 > you can execute data.sql;
 - go to localhost:8081/swagger-ui.html and sign with admin, admin
-- postman/insomnia: /auth/login enter login/password, get token, 
+- postman/insomnia/ or .../swagger: /auth/login enter login/password, get token, 
 then go to needed url and use header: Authorization, value: token without quotes. 

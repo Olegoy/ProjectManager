@@ -3,10 +3,11 @@ package com.example.yashkin.rest.dto;
 import com.example.yashkin.model.Role;
 import io.swagger.v3.oas.annotations.media.Schema;
 
+import java.io.Serializable;
 import java.util.Set;
 
 @Schema(description = "Пользователь")
-public class UserResponseDto {
+public class UserResponseDto implements Serializable {
 
     @Schema(description = "ID пользователя")
     private Long id;
