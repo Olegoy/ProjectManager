@@ -1,11 +1,13 @@
 package com.example.yashkin.rest.dto;
 
 import com.example.yashkin.model.ProjectStatus;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "Проект")
 public class ProjectRequestDto {
 
+    @JsonIgnore
     @Schema(description = "ID проекта")
     private Long id;
 
@@ -13,7 +15,7 @@ public class ProjectRequestDto {
     private String projectName;
 
     @Schema(description = "Заказчик проекта")
-    private UserRequestDto customer;
+    private Long customerId;
 
     @Schema(description = "Статус проекта")
     private ProjectStatus status;
@@ -22,15 +24,18 @@ public class ProjectRequestDto {
         this.id = id;
     }
 
+    public ProjectRequestDto() {
+    }
+
     public ProjectRequestDto(Long id, String projectName) {
         this.id = id;
         this.projectName = projectName;
     }
 
-    public ProjectRequestDto(Long id, String projectName, UserRequestDto customer, ProjectStatus status) {
+    public ProjectRequestDto(Long id, String projectName, Long customerId, ProjectStatus status) {
         this.id = id;
         this.projectName = projectName;
-        this.customer = customer;
+        this.customerId = customerId;
         this.status = status;
     }
 
@@ -50,12 +55,12 @@ public class ProjectRequestDto {
         this.projectName = projectName;
     }
 
-    public UserRequestDto getCustomer() {
-        return customer;
+    public Long getCustomerId() {
+        return customerId;
     }
 
-    public void setCustomer(UserRequestDto customer) {
-        this.customer = customer;
+    public void setCustomerId(Long customerId) {
+        this.customerId = customerId;
     }
 
     public ProjectStatus getStatus() {

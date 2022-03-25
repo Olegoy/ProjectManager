@@ -1,6 +1,7 @@
 package com.example.yashkin.rest.dto;
 
 import com.example.yashkin.model.Role;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.io.Serializable;
@@ -21,6 +22,7 @@ public class UserResponseDto implements Serializable {
     @Schema(description = "Login пользователя")
     private String login;
 
+    @JsonIgnore
     @Schema(description = "Пароль пользователя")
     private String password;
 
