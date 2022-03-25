@@ -15,6 +15,7 @@ The following technologies were used in the development this program:
 - Kafka;
 - Docker;
 - Kubernetes;
+- Actuator;
 
  The payment function is implemented in the AccountManager microservice (It is launched simultaneously with this service).
 
@@ -33,3 +34,4 @@ and role: 1, ADMIN
 > you can execute data.sql;
 - postman/insomnia/ or ...localhost:8081/swagger: /auth/login enter login/password (admin/admin), get token, 
 then go to needed url and use header: Authorization, value: token without quotes. 
+- access to actuator: localhost:8081/actuator/...
