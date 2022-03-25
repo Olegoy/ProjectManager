@@ -1,14 +1,18 @@
 package com.example.yashkin.service.impl;
 
 import com.example.yashkin.entity.ProjectEntity;
+import com.example.yashkin.entity.UserEntity;
 import com.example.yashkin.exception.NotFoundException;
 import com.example.yashkin.feign.BankAccountClient;
 import com.example.yashkin.mappers.ProjectMapper;
 import com.example.yashkin.model.ProjectStatus;
 import com.example.yashkin.repository.ProjectRepository;
+import com.example.yashkin.repository.UserRepository;
 import com.example.yashkin.rest.dto.ProjectRequestDto;
 import com.example.yashkin.rest.dto.ProjectResponseDto;
+import com.example.yashkin.rest.dto.UserResponseDto;
 import com.example.yashkin.service.ProjectService;
+import com.example.yashkin.service.UserService;
 import com.example.yashkin.utils.Translator;
 import com.example.yashkin.utils.Users;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -28,11 +32,15 @@ public class ProjectServiceImpl implements ProjectService {
     private final ProjectRepository projectRepository;
     private final BankAccountClient bankAccountClient;
     private final ProjectMapper projectMapper;
+    private final UserService userService;
+    private final UserRepository userRepository;
 
-    public ProjectServiceImpl(ProjectRepository projectRepository, @Qualifier("projectMapperImpl") ProjectMapper projectMapper, BankAccountClient bankAccountClient) {
+    public ProjectServiceImpl(ProjectRepository projectRepository, @Qualifier("projectMapperImpl") ProjectMapper projectMapper, BankAccountClient bankAccountClient, UserService userService, UserRepository userRepository) {
         this.projectRepository = projectRepository;
         this.projectMapper = projectMapper;
         this.bankAccountClient = bankAccountClient;
+        this.userService = userService;
+        this.userRepository = userRepository;
     }
 
     @Transactional
@@ -64,12 +72,18 @@ public class ProjectServiceImpl implements ProjectService {
     @Transactional
     @Override
     public ProjectResponseDto addProject(ProjectRequestDto projectRequestDto) {
-        if (Boolean.TRUE.equals(bankAccountClient.checkOperationByOwners(Users.getFullName(projectRequestDto.getCustomer().getFirstName(), projectRequestDto.getCustomer().getLastName()), Users.getFullName(projectRequestDto.getProjectName())).getBody())) {
-            ProjectEntity entity = projectMapper.projectEntityFromProjectRequestDto(projectRequestDto);
-            entity.setId(null);
+        if (Boolean.TRUE.equals(bankAccountClient.checkOperationByOwners(Users.getFullName(userService.getById(projectRequestDto.getCustomerId()).getFirstName()
+                , userService.getById(projectRequestDto.getCustomerId()).getLastName()), Users.getFullName(projectRequestDto.getProjectName())).getBody())) {
+
+            ProjectEntity entity = new ProjectEntity();
+            UserEntity userEntity = userRepository.getById(projectRequestDto.getCustomerId());
+            entity.setId(projectRequestDto.getId());
+            entity.setProjectName(projectRequestDto.getProjectName());
+            entity.setCustomer(userEntity);
+            entity.setStatus(projectRequestDto.getStatus());
             projectRepository.save(entity);
-            ProjectResponseDto projectResponseDto = projectMapper.projectResponseDtoFromProjectEntity(entity);
             log.info("project added");
+            ProjectResponseDto projectResponseDto = projectMapper.projectResponseDtoFromProjectEntity(entity);
             return projectResponseDto;
         } else {
             log.error("Project did not create! It didn't pay!");

@@ -66,7 +66,7 @@ public class ProjectServiceImplTest {
     @Test
     public void getById() {
         ProjectEntity expected = new ProjectEntity(ID, PROJECT_NAME);
-        ProjectRequestDto requestDto = new ProjectRequestDto(ID, PROJECT_NAME, new UserRequestDto(1l, "user", "userov", "user", "user", Set.of(Role.USER)), ProjectStatus.IN_PROGRESS);
+        ProjectRequestDto requestDto = new ProjectRequestDto(ID, PROJECT_NAME, 1l, ProjectStatus.IN_PROGRESS);
         Mockito.when(client.checkOperationByOwners(Mockito.any(), Mockito.any()).getBody()).thenReturn(true);
         service.addProject(requestDto);
         ProjectResponseDto actual = service.getById(ID);
