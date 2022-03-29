@@ -1,0 +1,10 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: create-table-paying
+      author: Oleg Yashkin
+      changes:
+        - createTable:
+            tableName: paying
+            columns:
+              - column: { name: project_name, type: VARCHAR(255), constraints: { primaryKey: true } }
