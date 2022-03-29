@@ -6,11 +6,11 @@ import com.example.yashkin.exception.NotFoundException;
 import com.example.yashkin.feign.BankAccountClient;
 import com.example.yashkin.mappers.ProjectMapper;
 import com.example.yashkin.model.ProjectStatus;
+import com.example.yashkin.repository.PayingRepository;
 import com.example.yashkin.repository.ProjectRepository;
 import com.example.yashkin.repository.UserRepository;
 import com.example.yashkin.rest.dto.ProjectRequestDto;
 import com.example.yashkin.rest.dto.ProjectResponseDto;
-import com.example.yashkin.rest.dto.UserResponseDto;
 import com.example.yashkin.service.ProjectService;
 import com.example.yashkin.service.UserService;
 import com.example.yashkin.utils.Translator;
@@ -34,13 +34,17 @@ public class ProjectServiceImpl implements ProjectService {
     private final ProjectMapper projectMapper;
     private final UserService userService;
     private final UserRepository userRepository;
+    private final Consumer consumer;
+    private final PayingRepository payingRepository;
 
-    public ProjectServiceImpl(ProjectRepository projectRepository, @Qualifier("projectMapperImpl") ProjectMapper projectMapper, BankAccountClient bankAccountClient, UserService userService, UserRepository userRepository) {
+    public ProjectServiceImpl(ProjectRepository projectRepository, @Qualifier("projectMapperImpl") ProjectMapper projectMapper, BankAccountClient bankAccountClient, UserService userService, UserRepository userRepository, Consumer consumer, PayingRepository payingRepository) {
         this.projectRepository = projectRepository;
         this.projectMapper = projectMapper;
         this.bankAccountClient = bankAccountClient;
         this.userService = userService;
         this.userRepository = userRepository;
+        this.consumer = consumer;
+        this.payingRepository = payingRepository;
     }
 
     @Transactional
@@ -72,8 +76,8 @@ public class ProjectServiceImpl implements ProjectService {
     @Transactional
     @Override
     public ProjectResponseDto addProject(ProjectRequestDto projectRequestDto) {
-        if (Boolean.TRUE.equals(bankAccountClient.checkOperationByOwners(Users.getFullName(userService.getById(projectRequestDto.getCustomerId()).getFirstName()
-                , userService.getById(projectRequestDto.getCustomerId()).getLastName()), Users.getFullName(projectRequestDto.getProjectName())).getBody())) {
+        if (Boolean.TRUE.equals(payingRepository.existsById(projectRequestDto.getProjectName()) || Boolean.TRUE.equals(bankAccountClient.checkOperationByOwners(Users.getFullName(userService.getById(projectRequestDto.getCustomerId()).getFirstName()
+                , userService.getById(projectRequestDto.getCustomerId()).getLastName()), Users.getFullName(projectRequestDto.getProjectName())).getBody()))) {
 
             ProjectEntity entity = new ProjectEntity();
             UserEntity userEntity = userRepository.getById(projectRequestDto.getCustomerId());
